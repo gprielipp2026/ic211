@@ -48,8 +48,8 @@ public class Lab1b
 
     // output
     System.out.println("numerator = " + numerator);
-    System.out.println("denominator = " + denominator);
+    System.out.println("denomintor = " + denominator);
     System.out.println("odds = 1 in " + (numerator / denominator) + " = " + (denominator / (double)numerator));
-    System.out.println("Goodbye " + name);
+    System.out.println("Goodbye " + name + ".");
   }
 }

@@ -34,9 +34,11 @@ public class Lab1c
     String name = "";
     while(args[argIndex].matches("[a-zA-Z'.]+"))
     {
-      name += args[argIndex];
+      name += args[argIndex] + " ";
       argIndex++;
-    } 
+    }
+    // remove the ending whitespace
+    name = name.trim(); 
 
     // gets the two integers from the user
     int n = Integer.parseInt( args[argIndex] );
@@ -49,8 +51,8 @@ public class Lab1c
     // output
     System.out.println("The two ints were " + n + " and " + k);
     System.out.println("numerator = " + numerator);
-    System.out.println("denominator = " + denominator);
+    System.out.println("denomintor = " + denominator);
     System.out.println("odds = 1 in " + (numerator / denominator) + " = " + (denominator / (double)numerator));
-    System.out.println("Goodbye " + name);
+    System.out.println("Goodbye " + name + ".");
   }
 }
