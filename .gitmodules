@@ -1,0 +1,3 @@
+[submodule "lab02ic211"]
+	url = git@github.com:gprielipp2026/lab02ic211.git
+	path = lab02ic211
