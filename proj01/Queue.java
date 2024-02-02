@@ -51,7 +51,7 @@ public class Queue
       return null;
 
     Node iter = head;
-    while(idx-- >= 0)
+    while(--idx >= 0)
     {
       iter = iter.next;
       if(iter == null)
@@ -68,13 +68,11 @@ public class Queue
   { 
     if(head == null)
     {
-      System.out.println("Creating head: " + s);
       head = new Node(s, null);
       tail = head;
     }
     else
     {
-      System.out.println("Adding to body: " + s);
       Node next = new Node(s, null);
       tail.next = next;
       tail = next;
