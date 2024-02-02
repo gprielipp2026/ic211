@@ -1,11 +1,17 @@
-/*
+/**
+ * Author: Prielipp (m265112)
+ *
+ * Queue.java
+ *
  * implements a queue
- * public methods
+ *
+ * public methods:
  * Queue()
  * void enqueue(Section s)
  * Section dequeue()
  * boolean empty()
  * Section at(int idx)
+ * int length()
  */ 
 public class Queue
 {
@@ -23,6 +29,7 @@ public class Queue
 
   private Node head;
   private Node tail;
+  private int length;
 
   /**
    * constructor, makes sure head and tail are NULL upon creation
@@ -31,6 +38,7 @@ public class Queue
   {
     head = null;
     tail = null;
+    length = 0;
   }
 
   /**
@@ -39,6 +47,9 @@ public class Queue
    */
   public Section at(int idx)
   {
+    if(idx > length) 
+      return null;
+
     Node iter = head;
     while(idx--)
     {
@@ -66,6 +77,15 @@ public class Queue
       tail.next = next;
       tail = next;
     }
+    length++;
+  }
+
+  /**
+   * Return the length of the Queue
+   */
+  public int length()
+  {
+    return this.length;
   }
 
   /**
@@ -75,6 +95,7 @@ public class Queue
   { 
     Node data = head;
     head = head.next;
+    if(head != null) length--;
     if(head == null)
     {
       tail = null;
