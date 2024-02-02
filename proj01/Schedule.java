@@ -109,6 +109,20 @@ public class Schedule
       }
     }
 
-    for(int period = 0; period < 6; 
+    for(int period = 0; period < gridSchedule[0].length; period++)
+    {
+      System.out.print((period+1)+" ");
+      for(int day = 0; day < gridSchedule.length; day++)
+      {
+        if(gridSchedule[day][period])
+          System.out.print("x");
+        else
+          System.out.print(" ");
+        
+        if(day+1 < gridSchedule.length)
+          System.out.print(" ");
+      }
+      System.out.println();
+    } 
   }
 }
