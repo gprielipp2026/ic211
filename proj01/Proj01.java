@@ -52,7 +52,7 @@ public class Proj01
         int courseID = in.nextInt();
         if(!schedule.add(courseName, courseID))
         {
-          System.err.println("Error! Section not found!");
+          System.out.println("Error! Section not found!");
         }
       }
       else if(cmd.equals("sections"))
@@ -70,7 +70,7 @@ public class Proj01
       }
       else
       {
-        System.err.println("Unknown command: " + cmd);
+        System.out.println("Unknown command: " + cmd);
       }
       System.out.print("> ");
     }  

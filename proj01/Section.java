@@ -79,6 +79,6 @@ public class Section
    */
   public String toString()
   {
-    return courseName + "\t" + courseID + "\t" + courseMtg + "\t" + courseBldg;
+    return courseName + " " + courseID + " " + courseMtg + " " + courseBldg;
   }
 }

@@ -13,6 +13,7 @@
  */
 
 import ic211.*;
+import java.util.*;
 
 public class Week
 {
@@ -108,4 +109,22 @@ public class Week
     }
   }
 
+  /**
+   * implemented for the test cases
+   */
+  public static void main(String[] args)
+  {
+    Scanner in = new Scanner(System.in);
+    Week week = new Week();
+
+    String cmd;
+    do {
+      week.printGrid();
+      cmd = in.next().strip();
+      if(cmd.equals("quit"))
+        break;
+      else
+        week.fill(cmd);
+    } while(!cmd.equals("quit"));
+  }
 }
