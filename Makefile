@@ -1,11 +1,8 @@
-src=$(wildcard HW*.java)
-tgt=$(src:%.java=%.class)
-bin=$(src:%.java=%)
+all: *.java
+	javac $^
 
-all: $(tgt)
+%:
+	java $@
 
-$(tgt): $(src)
-	javac $(src)
-
-run:
-	@java $(bin)
+clean:
+	$(RM) *.class
