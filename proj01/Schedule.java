@@ -1,6 +1,12 @@
 /**
  * Stores a Queue of schedules and has a method for 
  * printint out the schedule
+ * public methods:
+ * Section()
+ * void read(Scanner in)
+ * boolean add(String className, int section)
+ * void show()
+ * void week()
  */
 
 import java.util.*;
@@ -47,6 +53,9 @@ public class Schedule
 
   /**
    * Add a section from allCourses to courses
+   * return true if able to add the course
+   * false if the course is unavailable to add to the 
+   * schedule
    */
   public boolean add(String className, int section)
   {
@@ -55,6 +64,7 @@ public class Schedule
       return false;
 
     courses.enqueue( allCourses.at(index) );
+    return true;
   }
 
   /**
