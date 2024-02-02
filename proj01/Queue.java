@@ -20,7 +20,7 @@ public class Queue
   {
     public Section data;
     public Node next;
-    public Node(String d, Node n) {
+    public Node(Section d, Node n) {
       data = d;
       next = n;
     }
@@ -47,11 +47,11 @@ public class Queue
    */
   public Section at(int idx)
   {
-    if(idx > length) 
+    if(idx > length || length == 0) 
       return null;
 
     Node iter = head;
-    while(idx--)
+    while(idx-- >= 0)
     {
       iter = iter.next;
       if(iter == null)
@@ -68,11 +68,13 @@ public class Queue
   { 
     if(head == null)
     {
+      System.out.println("Creating head: " + s);
       head = new Node(s, null);
       tail = head;
     }
     else
     {
+      System.out.println("Adding to body: " + s);
       Node next = new Node(s, null);
       tail.next = next;
       tail = next;
@@ -93,6 +95,8 @@ public class Queue
    */
   public Section dequeue() 
   { 
+    if(length == 0) return null;
+    
     Node data = head;
     head = head.next;
     if(head != null) length--;

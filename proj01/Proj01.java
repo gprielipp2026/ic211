@@ -9,8 +9,6 @@ import java.io.*;
 
 public class Proj01
 {
-  private Schedule schedule;
-
   /**
    * Schedule manager reading from a list of all
    * sections and allowing the user to add sections
@@ -40,12 +38,13 @@ public class Proj01
     // Main loop
     String cmd;
 
-    schedule = new Schedule();
+    Schedule schedule = new Schedule();
     schedule.read(file);
 
     file.close();
 
-    while(System.out.print("> ") && (cmd = in.next()) && !cmd.equals("quit"))
+    System.out.print("> "); 
+    while(!(cmd = in.next()).equals("quit"))
     {
       if(cmd.equals("add"))
       {
@@ -58,7 +57,7 @@ public class Proj01
       }
       else if(cmd.equals("sections"))
       {
-        String courseName = in.next();
+        String courseName = in.next().strip();
         schedule.printSections(courseName);
       }
       else if(cmd.equals("show"))
@@ -73,6 +72,7 @@ public class Proj01
       {
         System.err.println("Unknown command: " + cmd);
       }
+      System.out.print("> ");
     }  
 
     in.close();

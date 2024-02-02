@@ -41,10 +41,10 @@ public class Section
   {
     Section output = new Section();
 
-    output.courseName = sc.next();
+    output.courseName = sc.next().strip();
     output.courseID = sc.nextInt();
-    output.courseMtg = sc.next();
-    output.courseBldg = sc.next();
+    output.courseMtg = sc.next().strip();
+    output.courseBldg = sc.next().strip();
 
     return output;
   }

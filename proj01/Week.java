@@ -9,7 +9,7 @@
  * Week()
  * Week add(Week)
  * void printGrid()
- * void fill(String)
+ * Week fill(String)
  */
 
 import ic211.*;
@@ -17,7 +17,7 @@ import ic211.*;
 public class Week
 {
   // periods (6) x days (5)
-  private boolean grid[6][5];
+  private boolean grid[][];
 
   public Week()
   {
@@ -86,9 +86,10 @@ public class Week
    * formatted like:
    * MWF1,R12
    */
-  public void fill(String input)
+  public Week fill(String input)
   {
     fill( DrBrown.explode(input)  );
+    return this;
   }
 
   /**

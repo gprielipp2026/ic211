@@ -62,7 +62,7 @@ public class Schedule
       {
         selectedCourses.enqueue(tmp);
         // add the tmp "schedule" to the current weekly schedule
-        selectedSchedule = selectedSchedule.add(new Week().fill(tmp.getCourseMtg()))
+        selectedSchedule = selectedSchedule.add(new Week().fill(tmp.getCourseMtg()));
         return true;
       }
     }
@@ -79,7 +79,7 @@ public class Schedule
   {
     int index = 0;
     Section tmp;
-    while( (tmp = allCourses.at(index++) != null) )
+    while( (tmp = allCourses.at(index++)) != null)
     {
       if(courseName.equals(tmp.getCourseName()))
         System.out.println(tmp);
@@ -93,7 +93,7 @@ public class Schedule
   {
     int index = 0;
     Section tmp;
-    while( (tmp = selectedCourses.at(index++) != null) )
+    while( (tmp = selectedCourses.at(index++)) != null) 
     {
       System.out.println(tmp);
     }
@@ -102,7 +102,7 @@ public class Schedule
   /**
    * prints the selectedCourses as a combined schedule in week
    */
-  public printWeek()
+  public void printWeek()
   {
     selectedSchedule.printGrid();
   }
