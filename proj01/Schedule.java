@@ -87,7 +87,9 @@ public class Schedule
     {
       // Either print anything that fits or it the courseNames match
       // and only if the course could fit into the selectedSchedule
-      if ((courseName.equals(tmp.getCourseName()) || any) && selectedSchedule.fits( tmp.getCourseMtg() ))
+      if ((courseName.equals(tmp.getCourseName()) || any) && 
+          !selectedCourses.contains(tmp.getCourseName()) &&
+          selectedSchedule.fits( tmp.getCourseMtg() ))
       {
         System.out.println(tmp);
       }

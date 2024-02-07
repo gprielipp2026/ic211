@@ -8,6 +8,7 @@
  * public methods:
  * Section read(Scanner)
  * boolean equals(String, int)
+ * boolean equals(String)
  * String getCourseMtg()
  * String getCourseName;
  * String toString()
@@ -58,6 +59,14 @@ public class Section
   }
 
   /**
+   * compare this Section's coursename to a passed in courseName
+   */
+  public boolean equals(String courseName)
+  {
+    return this.courseName.equals(courseName);
+  }
+
+   /**
    * gets courseMtg
    */
   public String getCourseMtg()

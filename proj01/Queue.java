@@ -11,6 +11,7 @@
  * Section dequeue()
  * boolean empty()
  * Section at(int idx)
+ * boolean contains(String)
  * int length()
  */ 
 public class Queue
@@ -103,6 +104,20 @@ public class Queue
       tail = null;
     }
     return data.data;
+  }
+
+  /**
+   * see if any of the Sections are equal to the string passed in
+   */
+  public boolean contains(String courseName)
+  {
+    Node tmp = head;
+    while(tmp != null)
+    {
+      if(tmp.data.equals(courseName)) return true;
+      tmp = tmp.next;
+    }
+    return false;
   }
 
   /**
