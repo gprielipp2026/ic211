@@ -8,6 +8,7 @@
  * public methods:
  * Week()
  * Week add(Week)
+ * boolean fits(String)
  * void printGrid()
  * Week fill(String)
  */
@@ -49,7 +50,34 @@ public class Week
     return output;
   }
 
- 
+
+  /**
+   * See if a given schedule in the format "MWF1,R12" fits
+   * into the current week
+   */
+  public boolean fits(String schedule)
+  {
+    return fits( DrBrown.explode(schedule) );
+  }
+
+  /**
+   *  See if a given schedule in the format ["M1", "W1", "F1", "R1", "R2"]
+   *  will fit into the current week
+   */
+  private boolean fits(String[] schedule)
+  {
+    String days = "MTWRF";
+    for(int i = 0; i < schedule.length; i++)
+    {
+      int day = days.indexOf(schedule[i].charAt(0));
+      int period = schedule[i].charAt(1) - '0' - 1; // 1-6 -> 0-5
+      
+      if(grid[period][day]) 
+        return false; // can't overlap with what is already there
+    }
+    return true;
+  }
+
   /**
    * Displays the grid formatted like:
    *   M T W R F

@@ -9,6 +9,7 @@
  * Schedule()
  * void read(Scanner)
  * boolean add(String, int)
+ * void printFits(String)
  * void printSections(String)
  * void printSchedule()
  * void printWeek()
@@ -68,6 +69,29 @@ public class Schedule
     }
 
     return false;
+  }
+
+  /**
+   * Prints out all of the sections of the given course that 
+   * could fit into the week; If the parameter="any", 
+   * then print out all sections that fit into 
+   * the week
+   */
+  public void printFits(String courseName)
+  {
+    int index = 0;
+    boolean any = courseName.equals("any");
+    Section tmp;
+
+    while( (tmp = allCourses.at(index++)) != null )
+    {
+      // Either print anything that fits or it the courseNames match
+      // and only if the course could fit into the selectedSchedule
+      if ((courseName.equals(tmp.getCourseName()) || any) && selectedSchedule.fits( tmp.getCourseMtg() ))
+      {
+        System.out.println(tmp);
+      }
+    }
   }
 
   /**

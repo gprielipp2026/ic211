@@ -68,6 +68,11 @@ public class Proj01
       {
         schedule.printWeek();
       }
+      else if(cmd.equals("fit"))
+      {
+        String courseName = in.next();
+        schedule.printFits(courseName);
+      }
       else
       {
         System.out.println("Unknown command: " + cmd);
