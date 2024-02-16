@@ -20,10 +20,11 @@ public class Lab06 {
     try{
       fin = new Scanner(new FileReader(args[0]));
     } catch(IOException e) { e.printStackTrace(); }
-  
+
     // read all of the tweets into the Queue
     TQE2 tq = new TQE2();
     TQE2 constant;
+    StringStack filters = new StringStack();
 
     Tweet tweet;
     while( (tweet = Tweet.read(fin)) != null ) { tq.enqueue(tweet); }
@@ -45,13 +46,35 @@ public class Lab06 {
         tq.dump();
       } else if(cmd.equals("filter"))
       {
-        tq = tq.filter(true, in.next());
+        String word = in.next();
+        tq = tq.filter(true, word);
+        filters.push("+" + word);
       } else if(cmd.equals("filter!"))
       {
-        tq = tq.filter(false, in.next());
+        String word = in.next();
+        tq = tq.filter(false, word);
+        filters.push("-" + word);
       } else if(cmd.equals("reset"))
       {
         tq = constant;
+      } else if(cmd.equals("undo"))
+      {
+        filters.pop();
+        StringStack.Iter it = filters.iterator();
+        tq = constant;
+        while(it.hasNext())
+        {
+          String action = it.next();
+          if(action.charAt(0) == '+')
+          {
+            tq = tq.filter(true, action.substring(1));
+          }
+          else
+          {
+            tq = tq.filter(false, action.substring(1));
+          }
+        }
+
       }
 
     } while(!cmd.equals("quit"));
