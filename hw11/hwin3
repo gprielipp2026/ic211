@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>IC211: Polymorphism [HW]</title>
+    <link rel="stylesheet" href="../hw.css">
+      <script type="text/Javascript" src="../../codeTable.js"></script>
+  </head>
+  
+  <body id="bg">
+    <div id="NavBar"><script type="text/javascript" src="../../navbar.js"></script></div>
+    <p>
+      Name: ____________________________________________________  Alpha: _____________________
+      <br>
+      <br>
+      Describe help received: _________________________________________________________________
+    <p>
+
+    <ol class="inst">
+      
+      <li>[24pts]
+	<p>
+	<script type="text/Javascript" src="hw/Apple.java.js"></script>
+	<script type="text/Javascript" src="hw/Jazz.java.js"></script>
+	<script type="text/Javascript" src="hw/Fruit.java.js"></script>
+
+	<script type="text/Javascript">
+	  mkJavaCodeTable(
+	  "Apple.java",codeApple_java(),
+	  "Jazz.java",codeJazz_java(),
+	  "Fruit.java",codeFruit_java()
+	  );</script>
+      </p>
+
+	  Consider each expression below as appearing at
+	  the <span class="red">right here!</span>
+	  in file Fruit.java, string that the resulting
+	  function call would produce.
+	<p>
+	  <table style="margin-left: -20pt;">
+	    <tr valign="top">
+	      <td>
+		<ol class="inst"
+		    style="list-style-type: lower-alpha;"
+		    >
+		  <li><code>v1.foo()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;____________</code></li>
+		  <li><code>v1.foo('x')&nbsp;&nbsp;____________</code></li>
+		  <li><code>v1.foo(7)&nbsp;&nbsp;&nbsp;&nbsp;____________</code></li>
+		  <li><code>Jazz.bar(v1)&nbsp;____________</code></li>
+		</ol>
+	      </td>
+	      <td>
+		<ol class="inst"
+		    start="5"
+		    style="list-style-type: lower-alpha;"
+		    >
+		  <li><code>v2.foo()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;____________</code></li>
+		  <li><code>v2.foo('x')&nbsp;&nbsp;____________</code></li>
+		  <li><code>v2.foo(7)&nbsp;&nbsp;&nbsp;&nbsp;____________</code></li>
+		  <li><code>Jazz.bar(v2)&nbsp;____________</code></li>
+		</ol>
+	      </td>
+	      <td>
+		<ol class="inst"
+		    start="9"
+		    style="list-style-type: lower-alpha;"
+		    >
+		  <li><code>v3.foo()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;____________</code></li>
+		  <li><code>v3.foo('x')&nbsp;&nbsp;____________</code></li>
+		  <li><code>v3.foo(7)&nbsp;&nbsp;&nbsp;&nbsp;____________</code></li>
+		  <li><code>Jazz.bar(v3)&nbsp;____________</code></li>
+		</ol>
+	      </td>
+	    </tr>
+	  </table>
+	</p> 
+      </li>
+
+      <li>
+	[76pts]
+	Take a look at <a href="hw/FileAnalyzer.html">this program</a>
+	which is a tool for analyzing files.  If you have a
+	file <code>foo</code>,
+	then <code>cat foo | java HW11</code> will tell you whatever
+	the program is able to determine about the type of the
+	file <code>foo</code>. 
+	Your job is to extend it so that in addition to recognizing
+	ASCII files and JPG files, it also recognizes PDF files (which
+	begin with four bytes corresponding to the ASCII characters %,
+	P, D, and F (i.e. bytes %PDF).
+      </li>
+
+
+    </ol>
+    
+  </body>
+</html>
