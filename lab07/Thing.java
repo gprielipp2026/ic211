@@ -3,8 +3,8 @@ import java.util.*; // for Random
 public class Thing
 {
   // dir: 0=North, 1=East, 2=South, 3=West. 
-  private int row, col, dir;
-  private char color;
+  protected int row, col, dir;
+  protected char color;
 
   public Thing(int row, int col, char color)
   {
