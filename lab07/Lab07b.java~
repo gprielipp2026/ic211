@@ -1,0 +1,70 @@
+import java.util.*;
+
+public class Lab07b
+{
+  public static void main(String[] args)
+  {
+    int N = 200;
+    if (args.length != 0) N = Integer.parseInt(args[0]);
+    Random rand = new Random(System.currentTimeMillis());
+ 
+    LList L = new LList();
+    int count = 0;
+    while(true)
+    {
+      // every N rounds add another typeA and typeB Thing
+      if (count % N == 0)
+      {
+	// add a typeA thing to the list
+	Thing tA = new Thing(45, 50, 'r'); 
+        L.add(tA);	
+        
+        //Node nA = new Node(); 
+	//nA.data = tA;
+	//nA.next = L;
+	//L = nA;
+	
+	// add a typeB thing to the list
+	Thing tB = new ThingB(55, 50, 'b'); 
+	L.add(tB);
+
+        //Node nB = new Node(); 
+	//nB.data = tB;
+	//nB.next = L;
+	//L = nB;
+      }
+
+      for(LList.Iter it = L.iterator(); it.hasNext(); ) {
+	System.err.println(it.next());
+      }
+	
+      // print out each thing
+      Thing t;
+      for(LList.Iter it = L.iterator(); it.hasNext(); )
+      {
+        t = it.next();
+        System.out.println(t);
+        t.maybeTurn(rand);
+        t.step();
+      }
+      System.out.println("done");
+      System.out.flush();
+
+      // print out each thing
+      //for(Node T = L; T != null; T = T.next)
+//	System.out.println(T.data.row + " " + 
+//			   T.data.col + " " + 
+//			   T.data.lab);
+  //    System.out.println("done");
+    //  System.out.flush();
+      
+      // move each thing
+      //for(Node T = L; T != null; T = T.next)
+     // {
+//	maybeTurn(T.data);
+//	step(T.data);
+  //    }      
+      count++;
+    }
+  }
+}

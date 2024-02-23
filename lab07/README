@@ -1,0 +1,12 @@
+Nate Schmidt (265646)
+George Prielipp(265112)
+
+We split the Thing data and methods into its own class that provided a
+public interface to interact with the Thing but not to alter its data
+from the outside.
+
+Adding new Things is easy because we separated the implementation so
+inheritance can be used. 
+
+The polymorphic call happens when we add a Thing to our LList. It
+ensures we can diversify our implementations and get unique output.
