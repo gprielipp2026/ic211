@@ -1,3 +1,6 @@
 [submodule "lab02"]
 	path = lab02
 	url = git@github.com:gprielipp2026/lab02ic211.git
+[submodule "lab08"]
+	path = lab08
+	url = git@github.com:gprielipp/casino211
