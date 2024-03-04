@@ -3,7 +3,4 @@
 	url = git@github.com:gprielipp2026/lab02ic211.git
 [submodule "lab08"]
 	path = lab08
-	url = git@github.com:gprielipp/casino211
-[submodule "casino211"]
-	path = casino211
 	url = git@github.com:gprielipp2026/casino211
