@@ -10,12 +10,19 @@ public class Queue
       tail = tail.next; 
     }
   }
-  public String dequeue()
+  public String dequeue() throws QueueEmptyException
   { 
+    if(head == null) 
+    {
+      throw new QueueEmptyException("Queue empty");
+    }
+
     Node t = head; 
     head = head.next;
     if (head == null)
+    {
       tail = null;
+    }
     return t.data; 
   }
   public boolean empty() { return head == null; }
@@ -27,8 +34,9 @@ public class Queue
     private Node curr;
     public Iter(Node start) { curr = start; }
     public boolean hasNext() { return curr != null; }
-    public String next() 
+    public String next() throws RuntimeException
     { 
+      if(empty()) throw new RuntimeException("Cannot iterate, Queue is empty", null);
       String s = curr.data; 
       curr = curr.next;  
       return s; 
