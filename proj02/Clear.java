@@ -15,7 +15,7 @@ public class Clear implements Encryptor {
 
   public String encrypt(String plain) throws Throwable
   { 
-    for(char cc : plain)
+    for(char cc : plain.toCharArray())
     {
       int c = (int)cc;
       if(c < 42 || c > 122)
@@ -28,7 +28,7 @@ public class Clear implements Encryptor {
 
   public String decrypt(String cipher) throws Throwable
   {
-    for(char cc : cipher)
+    for(char cc : cipher.toCharArray())
     {
       int c = (int)cc;
       if(c < 42 || c > 122)
