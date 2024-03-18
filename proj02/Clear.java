@@ -13,7 +13,7 @@ public class Clear implements Encryptor {
     }
   }
 
-  public String encrypt(String plain) 
+  public String encrypt(String plain) throws Throwable
   { 
     for(char cc : plain)
     {
@@ -26,7 +26,7 @@ public class Clear implements Encryptor {
     return plain;  
   }
 
-  public String decrypt(String cipher)
+  public String decrypt(String cipher) throws Throwable
   {
     for(char cc : plain)
     {
