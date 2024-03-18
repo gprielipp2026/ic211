@@ -2,7 +2,39 @@
 // not change the plaintext at all.
 public class Clear implements Encryptor {
   public String getAlgName() { return "clear";  }
-  public void   init(char[] key) { }
-  public String encrypt(String plain) { return plain;  }
-  public String decrypt(String cipher){ return cipher;  }
+  
+  public void   init(char[] key) throws Throwable 
+  {
+    for(char cc : key)
+    {
+      int c = (int)cc;
+      if(c < 42 || c > 122)
+        throw new Throwable(getAlgName() + ": '" + cc + "'invalid");
+    }
+  }
+
+  public String encrypt(String plain) 
+  { 
+    for(char cc : plain)
+    {
+      int c = (int)cc;
+      if(c < 42 || c > 122)
+        throw new Throwable(getAlgName() + ": '" + cc + "'invalid");
+    }
+
+
+    return plain;  
+  }
+
+  public String decrypt(String cipher)
+  {
+    for(char cc : plain)
+    {
+      int c = (int)cc;
+      if(c < 42 || c > 122)
+        throw new Throwable(getAlgName() + ": '" + cc + "'invalid");
+    }
+
+    return cipher;  
+  }
 }
