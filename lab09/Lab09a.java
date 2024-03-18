@@ -10,12 +10,15 @@ public class Lab09a
     String fn = "stdin";
     if(args.length > 0)
     {
-      if(args[0].equals("-v")) verbose = true;
-      else fn = args[0];
+      for(int i = 0; i < args.length; i++)
+      {
+        if(args[i].equals("-v")) verbose = true;
+        else if(fn.equals("stdin")) fn = args[i];
+      }
     }
 
     Scanner sc;
-
+    
     if(fn.equals("stdin"))
       sc = new Scanner(System.in);
     else
@@ -23,28 +26,34 @@ public class Lab09a
       try{ sc = new Scanner(new FileReader(fn)); }
       catch(IOException e)
       {
-        System.out.println("File \'" + fn + "\' cound not be opened; switching input to standard in.");
+        System.out.println("File \'" + fn + "\' could not be opened; switching input to standard in.");
+        fn = "stdin";
         sc = new Scanner(System.in);
       }
     }
 
-
+    String prompt = "";
+    if(fn.equals("stdin"))
+        prompt = "> ";
+  
     ModQueue Q = new ModQueue();
 
     do {
-      if(fn.equals("stdin"))
-        System.out.print("> ");
+      System.out.print(prompt);
       String s = sc.next();
+      String arg = null;
       try{
         if (s.equals("quit")) 
           break;
         else if (s.equals("clearto"))
         {
-          Q.dequeue(sc.next());
+          arg = sc.next();
+          Q.dequeue(arg);
         }
         else if (s.equals("add"))
         {
-          Q.enqueue(sc.next());
+          arg = sc.next();
+          Q.enqueue(arg);
         }
         else if (s.equals("dump"))
         {
@@ -55,16 +64,23 @@ public class Lab09a
           if(verbose)
             System.out.println("Unknown command \'" + s + "\'.");
         }
-      } catch(NullPointerException e)
-      {
-        if(verbose)
-          System.out.println("String \'" + s + "\' not found!");
-      } catch(NoSuchElementException e)
+      } 
+      catch(NoSuchElementException e)
       {
         if(s.equals("add") || s.equals("clearto"))
           System.out.println("Unexpected end of input.");
         break;
-      }catch (Throwable e) {
+      }
+      catch(QueueEmptyException e)
+      {
+        if(verbose)
+          System.out.println("String \'" + arg + "\' not found!");
+      }
+      catch(RuntimeException e)
+      {
+        // should do nothing
+      }
+      catch (Throwable e) {
         e.printStackTrace();
       }
     }while(true);
