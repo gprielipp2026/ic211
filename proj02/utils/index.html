@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>IC211: Project 2</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script type="text/Javascript" src="../../codeTable.js"></script>
+    <link rel="stylesheet" href="../project.css">
+    <style>
+      .pass { color: lime; }
+    </style>
+
+  </head>
+  
+  <body id="bg">
+    <div id="NavBar"><script type="text/javascript" src="../../navbar.js"></script></div>
+    <div class="section">
+      <h2>Executive Summary</h2>
+      
+      In this project you are writing a utility called "Vault" that provides secret,
+      authenticated storage.  The conceptual setup is "real world",
+      although the particular cryptographic algorithms we use are not,
+      because they are text-based historical techniques, rather than
+      modern digital ones.  The key points are:
+      <ol>
+	<li>
+	  data is stored by labels, so you give commands like "get the
+	  data associated with the label <code>psptnum</code>"
+	</li>
+	<li>there are multiple users storing data in a single file</li>
+	<li>users are authenticated so that nobody sees any data
+	  other than their own</li>
+	<li>cryptography keeps the data in the file secret, even from
+	  someone who can read the file and who has a copy of the
+	  Vault program and its source code
+	</li>
+	<li>
+	  the labels themselves are secured by encryption, so that
+	  someone who steals the file can get usernames but not data
+	  or the labels under which the data is stored.
+	</li>
+      </ol>
+      This is probably a bit easier to see with an example:
+      <table class="RM">
+	<tr>
+	  <td><b>file vault0</b></td>
+	  <td><b>sample run</b></td>
+	</tr>
+	<tr>
+	  <td><pre>
+user joe shift+vigenere ?5d`54=22d5Boqqv   
+user ann shift+caesar 2018^midGO_NAVY_
+data joe vigenere LjTmZ8o*s=CEWyi.q
+data joe caesar z53y5vJKDIHDHO
+data ann caesar instrument_french_horn</pre></td>
+	  <td>
+	    <pre>
+~/$ <span class="red">java Vault vault0</span>
+username:  <span class="red">joe</span>
+password:           <span style="color: orange;">&larr; password not echoed to the screen!</span>
+Access granted!
+&gt;  <span class="red">labels</span>
+ssnum
+combo
+&gt; <span class="red">get ssnum</span>
+892-88-1263
+&gt; <span class="red">quit</span></pre>
+	  </td>
+	</tr>
+      </table>
+
+      <!--
+	  joe TrashTalk:57
+	  ann 99cannotwait?
+	-->
+      
+      This project is designed to exercise your ability to write good
+      Object-oriented code in Java, which will include good use of
+      encapsulation, data-hiding, inheritance, polymorphism, class
+      hierarchies, interfaces and exception handling.
+
+      <p>
+	The project has three main pieces: encryption algortihms, hash
+	algorithms, and the vault.  If you do a good job of following
+	OOP best-practices in producing your solutions to the first
+	two parts, you should be OK on the third.  Otherwise ...
+      </p>
+    </div>      
+    
+    <div class="section">
+      <h2>Honor</h2>
+      <div style="border-style: solid; border-width: 2pt;">
+	The 
+	<a href="../../resources/course_policyv1.pdf">course policy</a>
+	and the instructions it references,
+	most pertinently
+	<a href="http://www.usna.edu/CS/_files/documents/ProgrammingPolicy.pdf">COMPSCIDEPTINST 1531.1C</a>,
+	spell out
+	what kinds of assistance are permissable for programming
+	projects.  The instructor can give explicit permission for
+	things that would otherwise not be allowed.
+	For this project, you have explicit permission 
+	<ol class="inst" style="list-style-type: lower-alpha;">
+	  <li>to get help from both Spring 2024 IC211 instructors and
+	    Spring 2024 IC211 MGSP Leaders
+	    (any assistance must be documented though),
+	    and</li> 
+	  <li>to use general purpose Java resources online (though such
+	    use must be documented).
+	    Resources that might specifically address this project,
+	    like the code of programs that do encryption
+	    with the Vigenere cipher, are not allowed.
+	  </li>
+	</ol>
+	Put together the instructions referenced in the course policy and the
+	explicit permissions above, and what you get is summarized as:
+	<ul>
+	<li>
+	  The only help you may receive on
+	  a project is from your instructor or the other IC211
+	  instructors / MGSP leaders, and that help must be clearly cited.  In turn, you
+	  cannot provide help to any IC211 students on this
+	  project.
+	</li>
+	<li>
+	  In no circumstance - project, homework or lab - may you copy
+	  code and submit it as your own work.  That is the definition
+	  of plagarism. 
+	</li>
+	<li>
+	  For projects, you may not look at other
+	  people's project code nor may you show your own code to
+	  others.
+	</li>
+	<li>
+	  You can look at online resources for general purpose Java
+	  programming, but not for help writing encryption or hashing code
+	  or anything else that is specific to the functionality
+	  required of your project.  These same rules apply to
+	  generative AI.
+	</li>
+	</ul>
+      </div>
+    </div>
+
+
+
+    <div>
+      <h2>Rules and important extra information</h2>
+      <ol class="inst">
+	<li>
+	  Labels, data and passwords are restricted to ASCII characters in the
+	  range 42-122 inclusive. I.e. they may only include:
+	  <pre>*+,-./0123456789:;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz</pre>
+	  I've carefully chosen encryption and hashing algrithms that
+	  produce results that are in that restricted character set as
+	  well.  Any encrypted entry in a vault-file and any
+	  user-entered label, data or password that is outside of
+	  these bounds is an error and should result in some kind of message.
+	</li>
+	<li>
+	  Sometimes we will want to represent strings
+	  as <code>String</code> objects, other times as objects of
+	  type <code>char[]</code>.  Just in case you didn't know
+	  here's how to convert back and forth:
+	  <pre>
+String str = "foo";
+char[] buff = str.toCharArray(); // convert String to char[]
+String rts = new String(buff);   // convert char[] to String</pre>
+	</li>
+	<li>
+	  You'll be converting chars to ints and ints to chars.
+	  Please remember that you must explictly cast to do this in
+	  Java, e.g. (int)str.charAt(0) + 7, or (char)(i + 3).	  
+	</li>
+	<li>
+	  <b class="red">Warning!</b>
+	  If you find yourself dealing with input that seems to be
+	  mysteriously skipped, you might want to loot at
+	  <a href="gotcha/index.html">this "gotcha" explanation</a>!
+	</li>	
+      </ol>
+    </div>
+
+    <div>
+      <h2>Part 1 [up to 25pts]: Encryption</h2>
+      The encryption we will be using in this project is
+      <em>symmetric encryption</em> 
+      (see <a href="http://www.usna.edu/Users/cs/wcbrown/courses/si110AY13S/lec/l24/lec.html">old
+      plebe cyber symmetric encryption notes</a>).
+      The three symmetric encryption algorithms you must support are
+      <code>clear</code>, 
+      <code>caesar</code>, and
+      <code>vigenere</code> (all described later).
+      A Part 1 solution will be a program TestEncryptors that allows
+      the user to encrypt a test message of their choice using any one
+      of the three algorithms above.  The program itself is not the
+      important product here: correct implmentations of the three
+      encryption algorithms with a single coherent interface and a
+      well-thought out system of error-handling is the real point.
+      <p>
+      <table class="RM">
+	<tr><td><b>example 1</b></td><td><b>example 2</b></td><td><b>example 3</b></td></tr>
+	<tr>
+	  <td><pre>~/$ <span class="red">java TestEncryptors</span>
+algorithm: <span class="red">clear</span>
+password : <span class="pass">grumpy</span>
+message  : <span class="red">This_is_just_test:1234</span>
+plain : This_is_just_test:1234
+cipher: This_is_just_test:1234
+decryp: This_is_just_test:1234
+</pre>
+</td>
+	  <td><pre>~/$ <span class="red">java TestEncryptors</span>
+algorithm: <span class="red">caesar</span>
+password : <span class="pass">grumpy</span>
+message  : <span class="red">This_is_just_test:1234</span>
+plain : This_is_just_test:1234
+cipher: y&lt;=G3=G3&gt;IGH3H9GH_VWXY
+decryp: This_is_just_test:1234
+</pre>
+</td>
+	  <td><pre>~/$ <span class="red">java TestEncryptors</span>
+algorithm: <span class="red">vigenere</span>
+password : <span class="pass">grumpy</span>
+message  : <span class="red">This_is_just_test:1234</span>
+plain : This_is_just_test:1234
+cipher: @_ceTg_VdghrKk_ei8nz-w
+decryp: This_is_just_test:1234
+</pre>
+</td>
+	</tr>
+      </table>
+      </p>
+      <p>
+	Your project will benefit tremendously from following good
+	object oriented design principals.  To help you out, I'm going
+	to impose more structure on this first part of the assignment.
+	Here are the rules and recommendations:
+
+
+	<ol class="inst" style="margin-left:-2em;">
+	  <li>
+	    Start off with the program defined by the following
+	    three files, and make them the basis for your solution.
+	    They are my gift to you, and you can (and should) modify
+	    them to suit your needs.
+	    <br>
+	      <b class="red">Note:</b> When you first look at this,
+	      you probably won't know what <code>ArrayList&lt; &gt;</code>
+	      is all about.  Fear not, it will be covered in the very
+	      next class.  For now, just know this: It's just like an
+	      array except a) it has an <code>add( )</code> method to
+	      add new elements to the back, and b) you access element
+	      the ith element
+	      not with "<code>[i]</code>", but with the "<code>.get(i)</code>".
+	    </br></br>
+	    <div style="margin-left: 0em;">
+	      <script src="init/Encryptor.java.js"></script>
+	      <script src="init/Clear.java.js"></script>
+	      <script src="init/TestEncryptors.java.js"></script>
+	      <table class="RM" class="codish">
+		<tr>
+		  <td><b>Encryptor.java</b></td>
+		  <td><b>TestEncryptors.java</b></td>
+		</tr>
+		<tr>
+		  <td><script>insertCode("Encryptor.java")</script></td>
+		  <td rowspan="3"><script>insertCode("TestEncryptors.java")</script></td>
+		</tr>
+		<tr>
+		  <td style="height:1em"><b>Clear.java</b></td>
+		</tr>
+		<tr>
+		  <td><script>insertCode("Clear.java")</script></td>
+		</tr>
+	      </table>
+	    </div>
+	  </li>
+	  <li>
+	    Add an implmentation of the Encryptor interface for the
+	    Caesar-shift cipher (algorithm
+	    name <code>caesar</code>): see 
+	    <a href="caesar.html">Caesar-shift details</a>.
+	    <br>
+	    Add an implmentation of the Encryptor interface for
+	    the Vigenere cipher (algorithm
+	    name <code>vigenere</code>): see 
+	    <a href="vigenere.html">Vigenere details</a>.	    
+	  </li>
+
+	  <li>
+	    Each of these three implementations should throw
+	    exceptions when error situations occur: for the
+	    TestEncryptors program all errors should result in
+	    exceptions thrown out of main() and vomited onto the
+	    screen.  The types and accompanying messages of these
+	    exceptions should be informative!
+	    <br>
+	    <b>Important:</b> it's up to you to define a nice
+	    hierarchy of exceptions that will allow you to handle
+	    errors nicely in the coming sections.
+	  </li>
+
+	  <li>
+	    Test thoroughly!  To help you do so, here are some test
+	    vectors:
+	    <ul>
+	      <pre>
+algorithm   password     plaintext        ciphertext     note
+clear       whale65]     987:test;DOG     987:test;DOG
+caesar      whale65]     987:test;DOG     ?&gt;=@zkyzAJUM
+vigenere    whale65]     987:test;DOG     5vn+^q-V7158
+clear       10$More      987:test;DOG                    error $ not allowed in key
+caesar      10$More      987:test;DOG                    error $ not allowed in key
+vigenere    10$More      987:test;DOG                    error $ not allowed in key
+clear       hone_5^      1$L0VE$cats$                    error $ not allowed in plaintext
+caesar      hone_5^      1$L0VE$cats$                    error $ not allowed in plaintext
+vigenere    hone_5^      1$L0VE$cats$                    error $ not allowed in plaintext</pre>
+	    </ul>
+	    <b class="red">Important!</b> When there's an error, do
+	    not print any error messages.  Your program should crash
+	    with some kind of uncaught exception!
+	  </li>
+	</ol>
+      </p>
+
+      
+    </div>
+
+
+    <div>
+      <h2>Part 2 [up to 50pts]: Hashing</h2>
+      Encryption takes a plaintext message and a key and produces a
+      ciphertext message in such a way that it can, if you know the
+      key, eventually be decrypted to recover the plaintext message.
+      A different kind of operation called <em>hashing</em>, which
+      simply takes a message and generates a fixed length
+      random-looking output called the "digest", or the "hash" of the
+      method. Encryption provides <em>confidentiality</em>.
+      Hashing provides <em>integrity</em>.  Hashing, as it turns out,
+      is a critical tool in verifying passwords.  In this context, the
+      "message" to be hashed is the user's password.
+      See
+      the <a href="http://www.usna.edu/Users/cs/wcbrown/courses/si110AY13S/lec/l25/lec.html">old
+	plebe cyber notes on hashing a passwords</a> for more information.
+      <p>
+	A Part 2 solution is a program <code>TestHashers</code> that
+	allows the user to hash a test message (which will the "password") of their choice using
+	one of the following three algorithms: 
+	<code>padcut</code>,
+	<code>shift+caesar</code>, and
+	<code>shift+vigenere</code>.
+	The program itself is not the important product here: correct
+	implmentations of the three hashing algorithms with a
+	single coherent interface and a well-thought out system of
+	error-handling is the real point. 
+	<br>
+	<b>Note:</b> <em>Please</em> take note of the nice design we
+	laid out for you for the encryption stuff in Part 1, and try
+	to do something similar here!
+      </p>
+
+      <p>
+      <table class="RM">
+	<tr><td><b>example 1</b></td><td><b>example 2</b></td><td><b>example 3</b></td><td><b>example 4</b></td></tr>
+	<tr>
+	  <td><pre>~/$ <span class="red">java TestHashers</span>
+algorithm: <span class="red">padcut</span>
+password : <span class="pass">grumpy</span>
+password read : grumpy
+hash computed : grumpyxxxxxxxxxx
+</pre>
+	  <td><pre>~/$ <span class="red">java TestHashers</span>
+algorithm: <span class="red">padcut</span>
+password : <span class="pass">0123456789abcdefuvw</span>
+password read : 0123456789abcdefuvw
+hash computed : 0123456789abcdef
+</pre>
+</td>
+	  <td><pre>~/$ <span class="red">java TestHashers</span>
+algorithm: <span class="red">shift+caesar</span>
+password : <span class="pass">grumpy</span>
+password read : grumpy
+hash computed : hxgZorxKIJQw51,`
+</pre>
+</td>
+	  <td><pre>~/$ <span class="red">java TestHashers</span>
+algorithm: <span class="red">shift+vigenere</span>
+password : <span class="pass">grumpy</span>
+password read : grumpy
+hash computed : U@P9yh&gt;l0N&lt;;_o]o
+</pre>
+</td>
+	</tr>
+      </table>
+      </p>
+
+      <ol class="inst" style="margin-left:-2em;">
+	<li>
+	  ➤ The <code>padcut</code> algorithm is to have the hash of the
+	  message/password be the the first 16 characters of message
+	  itself, if the message/password is at least 16 characters long, or
+	  the message/password with x's added to the back 	  
+	  in order to pad out to 16 characters if the
+	  message is shorter.<br>
+	  ➤ The <code>shift+</code>
+	  algorithm adapts a symmetric encryption algorithm to produce
+	  a hash, which gives us
+	  <code>shift+caesar</code> and <code>shift+vigenere</code>
+	  (you could offer <code>shift+clear</code> if you wanted to):
+	  see <a href="shiftplus.html">shift+ details</a>.
+	</li>
+	<li>
+	  Each of these three hash implementations should throw
+	  exceptions when error situations occur: for the
+	  TestHashers program all errors should result in
+	  exceptions thrown out of main() and vomited onto the
+	  screen. The types and accompanying messages of these
+	  exceptions should be informative! 
+	  <br>
+	  <b>Important:</b> it's up to you to define a nice hierarchy
+	  of exceptions that will allow you to handle errors nicely in
+	  the coming sections. 
+	</li> 
+	<li>
+	  Test thoroughly! To help you do so, here are some test vectors:
+	  <pre>
+<b>algorithm       password  hash               note</b>
+padcut          whale65]  whale65]xxxxxxxx
+shift+caesar    whale65]  V^n]PehnA?@Gm+xs
+shift+vigenere  whale65]  C+HK`8fzqA+4P3Q[
+padcut          10$more                      error $ not allowed in key
+shift+caesar    10$more                      error $ not allowed in key
+shift+vigenere  10$more                      error $ not allowed in key</pre>
+	  <b class="red">Important!</b> When there's an error, do
+	  not print any error messages.  Your program should crash
+	  with some kind of uncaught exception!
+	</li>
+      </ol>
+      <b class="red">Note:</b> You will be graded in part on how
+      your design is. [Did you keep interfaces separated from
+      implementations?  Did you duplicate code?]      
+      One good test is this: How hard would it be to
+      a support for another hashing algorithm (or shift+ for a new
+      kind of symmetric encryption)? If the answer is "not
+      hard", you've done a good job!   
+    </div>
+
+
+    <div>
+      <h2>Part 3 [up to 75pts]: Authentication</h2>
+      A Part 3 solution is a program that takes a vault-file that
+      contains only "user" entries (format described below), queries
+      the user for a username and password, and replys with either the
+      message "Access granted!" or "Access denied!" depending on
+      whether the username and password pass authentication.
+      If access is granted, the program prints a <b>&gt;</b> prompt
+      and processes commands ... although the only command it
+      understands is <code>quit</code>, which immediately quits the program.
+      <p>
+      <table class="RM">
+	<tr>
+	  <td><b>file <a href="vault/vault3">vault3</a></b></td>
+	  <td><b>example 1a, 1b</b></td>
+	  <td><b>example 2a, 2b</b></td>
+	  <td><b>example 3a, 3b</b></td>
+	</tr>
+	<tr>
+	  <td><pre style="padding-right: 12pt;">user aviv padcut princessxxxxxxxx
+user mcdowell shift+caesar FDELr0,x[csbUjms
+user brown shift+vigenere 7sM7;9/D:@R_c]3i</pre></td>
+
+	  <td><pre style="padding-right: 12pt;">~/$ <span class="red">java Vault vault3</span>
+username: <span class="red">aviv</span>
+password: <span style="color: lime">123456</span>
+Access denied!
+~/$ <span class="red">java Vault vault3</span>
+username: <span class="red">aviv</span>
+password: <span style="color: lime">princess</span>
+Access granted!
+&gt; <span class="red">quit</span></pre></td>
+
+	  <td><pre style="padding-right: 12pt;">~/$ <span class="red">java Vault vault3</span>
+username: <span class="red">mcdowell</span>
+password: <span style="color: lime">StandDesk</span>
+Access denied!
+~/$ <span class="red">java Vault vault3</span>
+username: <span class="red">mcdowell</span>
+password: <span style="color: lime">Cuddly1</span>
+Access granted!
+&gt; <span class="red">quit</span></pre></td>
+
+	  <td><pre style="padding-right: 12pt;">~/$ <span class="red">java Vault vault3</span>
+username: <span class="red">brown</span>
+password: <span style="color: lime">G0N4\/y</span>
+Access denied!
+~/$ <span class="red">java Vault vault3</span>
+username: <span class="red">brown</span>
+password: <span style="color: lime">OOP-C-day-Z</span>
+Access granted!
+&gt; <span class="red">quit</span></pre></td>
+	</tr>
+      </table>
+      </p>
+
+      Make sure you have a nice clean design for your solution, and
+      test thoroughly to make sure you meet all of the following requirements:      
+
+      <ol class="inst" style="margin-left:-2em;">
+	<li>
+	  The program must run as <code>java Vault
+	  &lt;filename&gt;</code>, and it's prompts and output
+	  messages must match the format of the examples above
+	  exactly.  This also means that the password should not be
+	  echoed to the screen. See TestEncryptors.java for an example
+	  of how to do this.	  
+	</li>
+	<li>
+	  No error should result in a an exception being thown out of
+	  main and dumped to the screen.  Instead, all error
+	  conditions should be caught and result in meaningful error
+	  messages (written to <code class="red">stdout</code>).  Here is a list of some possible errors and the
+	  required output/behavior:
+	  <ul>
+	    <li>called with no command-line argument:
+	      output "<code class="red">usage: java Vault [-au] &lt;filename&gt;</code>"
+	      and exit. (The "[-au]" will make sense in the next part.)
+	    </li>
+	    <li>
+	      called with filename that can't be found/opened:
+	      output "<code class="red">Error! File '<em>name</em>' could not be opened.</code>"
+	      and exit.
+	    </li>
+	    <li>
+	      input file not in the proper format, i.e. could not be
+	      read in as a number of "user" records, one per line:
+	      output "<code class="red">Error! File '<em>name</em>' improperly formatted.</code>"
+	      and exit. (see <a href="vault/vault3.1">vault3.1</a> for example)
+	      <b>Note:</b> this message comes <em>before</em> either the username
+	      or the password are read.
+	    </li>
+	    <li>
+	      username not found or password does not match or
+	      password contains a character outside ASCII range 42-122: these are
+	      not treated as errors, "<code>Access denied!</code>" is the proper
+	      message for this case.
+	      <b>Note:</b> this message always comes <em>after</em>
+	      both the username and the password are read.
+	    </li>
+	    <li>
+	      input file specifies a hash algorithm for the given
+	      username that is not supported:
+	      output "<code class="red">Error! Hash algorithm '<em>hashalg</em>' not supported.</code>"
+	      and exit. (see <a href="vault/vault3.2">vault3.2</a> and login
+	      with username=aviv and password=princess for example)
+	      <b>Note:</b> this message always comes <em>after</em>
+	      both the username and the password are read.
+	    </li>
+	  </ul>
+	</li>
+      </ol>
+    </div>
+
+
+    <div>
+      <h2>Part 4 [up to 85pts]: Adding users</h2>
+      A Part 4 solution builds on top of a Part 3 solution to add the 
+      ability to add new users to the vault-file.  In this case, the
+      program is run as
+      <pre>java Vault -au <em>filename</em></pre>
+      where the -au option indicates that you want to add a user. 
+      The user is prompted to enter username, password and a hash
+      algorithm as shown in the examples below.
+      <p>
+      <table class="RM">
+	<tr>
+	  <td><b>1. file vault4</b></td>
+	  <td><b>2. add user</b></td>
+	  <td><b>3. new file vault4</b></td>
+	  <td><b>4. authenticate</b></td>
+	</tr>
+	<tr>
+	  <td><pre style="padding-right: 12pt;">user aviv padcut princessxxxxxxxx</pre></td>
+
+	  <td><pre style="padding-right: 12pt;">~/$ <span class="red">java Vault -au vault4</span>
+username: <span class="red">roche</span>
+password: <span style="color: lime">Tuba+Time</span>
+Hash algorithm: <span class="red">shift+caesar</span></pre></td>
+
+	  <td><pre style="padding-right: 12pt;">user aviv padcut princessxxxxxxxx
+user roche shift+caesar *0TRSZ/&gt;:5iq0pcx</pre></td>
+
+	  <td><pre style="padding-right: 12pt;">~/$ <span class="red">java Vault vault4</span>
+username: <span class="red">roche</span>
+password: <span style="color: lime">Tuba+Time</span>
+Access granted!
+&gt; <span class="red">quit</span></pre></td>
+	</tr>
+      </table>
+      </p>
+      <p>
+	<b class="red">Note:</b> The new version of the file should
+	contain all the original users, in the original order, with
+	the new user added to the end.
+      </p>
+      
+      <div class="annotation">
+	We haven't really done anything with writing files yet.
+	Here's some example code.  
+	Note that you need to make sure to close the file.
+	That's important.  You'll also want to make sure
+	you close the input file immediately after reading it at the
+	beginning of your program.
+	<pre>
+PrintWriter pw = null;
+try {
+  pw = new PrintWriter(new File(fname));
+} 
+catch (FileNotFoundException fnfe) {
+  fnfe.printStackTrace();
+} 
+
+<span class="red">// Do whatever you need to do, e.g. pw.println("foo")</span>
+
+if (pw != null) pw.close();</pre>
+      </div>
+      
+      Obviously, we're adding functionality to your Part 3 solution,
+      so all the part three stuff should work as before. The only
+      really new things are:
+      <ol class="inst" style="margin-left:-2em;">
+	<li>
+	  When adding a user, if the password contains characters
+	  outside ASCII values 42-122, 
+	  output "<code>Error! Invalid symbol '<em>x</em>' in password.</code>"
+	      and exit.
+	  <b>Note:</b> this message only comes <em>after</em>
+	  the username, password and algorithm have all been read.
+	</li>
+	<li>
+	  if the user specifies a hash algorithm that is not supported
+	      output "<code>Error! Hash algorithm '<em>hashalg</em>' not supported.</code>"
+	      and exit.
+	  <b>Note:</b> this message only comes <em>after</em>
+	  the username, password and algorithm have all been read.
+	</li>
+	<li>
+	  If the given username already appears in the input file,
+	  output
+	  "<code>Error! Username '<em>username</em>' already in use.</code>"
+	  and exit.	  
+	  <b>Note:</b> this message only comes <em>after</em>
+	  the username, password and algorithm have all been read.
+	</li>
+      </ol>
+      <p>
+	<b>Note:</b> Writing to files is a bit new.  See the
+	annotation to the right for details.  PrintWriter objects give
+	you your usual print, println and printf.  When a new user is
+	added, you completely overwrite the vaultfile.  That means you
+	have to write entries for all the existing users as well as
+	for the new user.
+      </p>
+    </div>
+
+
+    <div style="clear: both;">
+      <h2>Part 5 [up to 100pts]: Viewing data</h2>
+      A Part 5 solution builds on top of a Part 4 solution in two
+      ways
+      <ol class="inst" style="margin-left:-2em;">
+	<li>
+	  The inputfile now contains "data" entries mixed in with the 
+	  "user" entries.  Each data entry is a line of the form
+	  <pre>data <em>username</em> <em>encalg</em> <em>cipertext</em></pre>
+	  where <em>encalg</em> can be one of 
+	  <code>clear</code>,
+	  <code>caesar</code>, or
+	  <code>vigenere</code>, and <em>ciphertext</em> is a
+	  ciphertext-string that decrypts (with the user's password as
+	  key and using encryption algorithm <em>encalg</em>)
+	  to a plaintext string of the form <em>label</em><code>_</code><em>text</em>,
+	  where both the label and the text come from the ASCII range
+	  42-122, but the label does not include the '_' character.
+	  For example, suppose there is a user crabbe with password
+	  FlappyBirds.  We might have a data entry like this:
+	  <pre>
+data crabbe caesar ,//=0&gt;&gt;*j@8-0=*P*c=48,@7/*l7J
+
+Note: decrypt with caesar and password FlappyBirds gives: address_Number_4_Grimauld_Pl.
+                                                          \_____/ \___________________/
+                                                           label          text</pre>
+	  This means that the entry represents the label "address"
+          with the associated text "Number_4_Grimauld_Pl.".
+	</li>
+      
+	<li>
+	  Once a user has been successfully authenticated, that user
+	  enters into a little command shell that process the following
+	  commands:
+	  <ul>
+	    <li><b>labels</b> &mdash; this should print out all the
+	      labels associated with this user.
+	      Note that the only way to do this is to go through all
+	      data entries with the matching username, decrypt (with
+	      the same password that the user authenticated with),
+	      split 
+	      the resulting plaintext into everything before the first
+	      "_" and everything after, and take the "before" part as
+	      the label.
+	    </li>
+	    <li><b>get <em>label</em></b> &mdash; this should print
+	    out the text associated with <em>label</em> for the
+	    current user.  Note: you decrypt entries for the current
+	    user with the same password that the user authenticated with.</li>
+	    <li><b>quit</b> &mdash; this should quit the program</li>
+	  </ul>
+	</li>
+      </ol>
+
+
+      <p>
+	<table class="RM">
+	  <tr>
+	    <td><b>file <a href="vault/vault5a">vault5a</a></b></td>
+	    <td><b>sample run 1</b></td>
+	    <td><b>file <a href="vault/vault5b">vault5b</a></b></td>
+	    <td><b>sample run 2</b></td>
+	  </tr>
+	  <tr>
+	    <td><pre>user aviv padcut princessxxxxxxxx
+data aviv clear weakness_backhand
+data aviv caesar bZa`WQwtspu+vpyyxx
+data aviv vigenere [XdX*Kf\TF\XG.ajZZb\WX</pre></td>
+	    <td><pre>~/$ <span class="red">java Vault vault5a</span>
+username: <span class="red">aviv</span>
+password: <span style="color: lime;">princess</span>
+Access granted!
+&gt; <span class="red">labels</span>
+weakness
+phone
+faveBand
+&gt; <span class="red">get weakness</span>
+backhand
+&gt; <span class="red">get faveBand</span>
+One_Direction
+&gt; <span class="red">quit</span></pre></td>
+	    <td><pre>user aviv shift+caesar /+wZbraTilrECDKq
+user mcdowell shift+vigenere fW*XrW]7P_uMnoAZ
+data aviv vigenere [XdX*Kf\TF\XG.ajZZb\WX
+data mcdowell caesar HGCTAvQWNTQRJQDKC
+data aviv caesar bZa`WQwtspu+vpyyxx</pre></td>
+	    <td><pre>$ <span class="red">java Vault vault5b</span>
+username: <span class="red">mcdowell</span>
+password: <span style="color: lime;">StandDesk</span>
+Access granted!
+&gt; <span class="red">labels</span>
+fear
+&gt; <span class="red">get fear</span>
+Coulrophobia
+&gt; <span class="red">get faveBand</span>
+&gt; <span class="red">done</span>
+Unknown command 'done'.
+&gt; <span class="red">quit</span></pre></td>
+	  </tr>
+	</table>
+      </p>
+	
+      Other requirements and hints:
+      <ol>
+	<li>
+	  If the user enters an unknown command (i.e. not add, label
+	  or quit), output the message "<code class="red">Unknown command '<em>comm</em>'.</code>"
+	  and continue reading more commands.
+	</li>
+	<li>
+	  If the user enters a label for the "get" command that is not matched by any entry,
+	  nothing should be printed at all.  Just return the prompt
+	  and wait for the next command.
+	</li>
+	<li>
+	  If in decrypting an entry (whether for the "labels" command or
+	  the "get" command) there is any kind of error
+	  (e.g. invalid character in the input or the output, or the
+	  decrypted string does not have a '_' in it) print out the
+	  message
+	  "<code class="red">Error! corrupted entry '<em>ciphertext</em>' in vault file.</code>", and continue
+	  processing the other data entries as if the one that caused
+	  the error didn't exist.<br>
+	  Note: try the file <a href="vault/vault5c">vault5c</a>, logging in
+	  as user mcdowell with password StandDesk.  If you give the
+	  labels command, the last entry for user mcdowell should give
+	  this kind of error.
+	</li>
+	<li>
+	  <b class="red">Hint:</b> A combination of String's indexOf() and substring()
+	  methods  make it easy to break up the decrypted string
+	  into the <em>label</em> (i.e. what comes before the first '_')
+	  and the <em>text</em> (i.e. what comes after the first '_').
+	</li>
+      </ol>
+
+    </div>
+
+
+    <div>
+      <h2>Part 6 [up to 10pts Extra Credit]: Adding data</h2>
+      A Part 6 solution builds on a Part 5 solution to add the last
+      piece of core functionality: the ability to add new data
+      entries. In particular, one new command is added to the command
+      shell the user gets after a successful login:
+      <pre>add <em>encalg</em> <em>label</em> <em>text</em></pre>
+      This command should add a data entry for the current user, with
+      the encryption algorithm given by <em>encalg</em>, and form the
+      ciphertext by encryption <em>label</em><code>_</code><em>text</em>
+      with algorithm <em>encalg</em> using the password the user
+      authenticated with as the key for the encryption.<br>
+      <b>Note:</b> if the <em>label</em> entered by the user is
+      already in use by that user, the given <em>text</em> replaces
+      the text in the old entry with that label.  In particular, this
+      means that we never gert duplicate labels in data entries for a
+      given user.
+      <p>
+	<table class="RM">
+	  <tr>
+	    <td><b>file vault6a before</b></td>
+	    <td><b>sample run</b></td>
+	    <td><b>file vault6a after</b></td>
+	  </tr>
+	  <tr>
+	    <td><pre>user aviv padcut princessxxxxxxxx
+user roche shift+caesar *0TRSZ/&gt;:5iq0pcx
+data roche caesar dgn]WZac]Wja\af_</pre></td>
+	    <td><pre>
+$ <span class="red">java Vault vault6a</span>
+username: <span class="red">roche</span>
+password: <span style="color: lime;">Tuba+Time</span>
+Access granted!
+&gt; <span class="red">add vigenere ssnum 123-45-6789</span>
+&gt; <span class="red">quit</span></pre></td>
+	    <td><pre>user aviv padcut princessxxxxxxxx
+user roche shift+caesar *0TRSZ/&gt;:5iq0pcx
+data roche caesar dgn]WZac]Wja\af_
+data roche vigenere LmU[n8punW.md7aw+</pre></td>
+	  </tr>
+	</table>
+      </p>
+
+      What makes this challenging is the sheer number of things that
+      can go wrong with this command &mdash; all of which should be
+      handled gracefully.
+      <ol class="inst" style="margin-left:-2em;">
+	<li>
+	  The user enters an unsupported encryption algorithm.
+	  In this case, the program should output
+	  "Error! Encryption algorithm 'encalg' not supported.",
+	  print the prompt and await the next command from the user. 
+	</li>
+	<li>
+	  The user enters a label with characters outside ASCII
+	  42-122, or which includes a '_' character, which is not
+	  allowed in labels.
+	  In this case, the program should output
+	  "Error! Label 'label' is invalid.",
+	  print the prompt and await the next command from the user. 	  
+	</li>
+	<li>
+	  The user enters text that includes characters outside 
+	  ASCI 42-122.
+	  In this case, the program should output
+	  "Error! Invalid character 'X' in text.",
+	  print the prompt and await the next command from the user. 	  	  
+	</li>
+      </ol>
+
+
+    </div>
+
+
+
+    <div>
+      <h2>Part 7 [up to 5pts Extra Credit]: "Full" shift+ hashing</h2>
+      Shift+ hashing as implemented in Part 2 is limited to
+      message/passwords of at most 16 characters.  If you give it
+      longer messages/passwords, it simply ignores everything after
+      the 16th character.  Look at the
+      <a href="fullshiftplus.html">full shift+ hashing details</a> and
+      extend your implementation to handle longer messages/passwords.
+      <br><br>
+      <table class="RM">
+	<tr>
+	  <td style="padding-right: 1em;"><pre>
+~/$ <span class="red">java TestHashers</span>
+algorithm: <span class="red">shift+vigenere</span>
+password : <span style="color: lime;">ThisIsExactly_16</span>
+password read : ThisIsExactly_16
+hash computed : 4rgZDs.8u1bjr5A/</pre></td>
+	  <td style="padding-right: 1em;"><pre>
+~/$ <span class="red">java TestHashers</span>
+algorithm: <span class="red">shift+vigenere</span>
+password : <span style="color: lime;">ThisIsExactly_16_plus_some</span>
+password read : ThisIsExactly_16_plus_some
+hash computed : K&gt;0F_&lt;6vvHfYP:c^</pre></td>
+	</tr>
+      </table>
+    </div>
+
+
+    <div class="section">
+      <h2>When to submit</h2>
+      Project 2 is due by 1330 on Tuesday, April 5th.
+      Late projects
+      incurr a penalty of 3^N points, where N is the number of days
+      late.
+    </div>
+
+
+    <div class="section">
+      <h2>What to submit</h2>
+      Your electronic submission must include:
+      <ol>
+	<li>
+	  all .java file required to compile and run your
+	  program - including the ones you were given in the assignment
+	</li>
+	<li>
+	  a file named <code>README</code>
+	  with your name and alpha code, which step you are submitting
+	  for (including any extra credit), and any issues you know your program has.
+	</li>
+      </ol>
+      Your paper submission must inlcude:
+      <ol>	
+	<li>A completed copy of <a href="coversheet.html">this coversheet</a> on paper.</li>
+	<li>
+	  A printout of your README file plus all of your .java files
+	  <em>all done as a single codeprint-generated file!</em>
+	  Please make sure that
+	  your name and alpha code appear in evey single file .java file.
+	</li>
+      </ol>
+    </div>
+
+
+
+    <div class="section">
+      <h2>How to submit</h2>
+      The paper portions of your submission should be stapled together
+      and slid under your prof's door. For electronic submission,
+      continue to use the same method from the previous projects,
+      except that the <code>submit</code> script and the accompanying
+      website has been upgraded and improved by LCDR Kenny.  You'll
+      need to get the new submit script (instructions in the box to
+      the right), and pay careful attention as you copy&amp;paste the
+      submit command shown below.
+
+      Within the directory on your Virtual Machine where you have been
+      saving your project, type: 
+      <pre>submit -c=IC211 -p=proj02 *.java README</pre>
+      <!--      <pre>ic211-submit proj02 <em class="red">files-to-include</em></pre>  
+	
+      Where <em class="red">files-to-include</em> is a list of all the
+      files you're supposed to submit.
+      Submitting more than you need to submit is always 
+      OK.  Just be sure
+      that all the files needed to compile and run your project
+      are
+      there.  So, assuming you have a directory for this project and
+      that you are in that directory, you could submit like this:
+      <pre>ic211-submit proj02 README *.java *.txt</pre>
+      You may submit files at any
+      time, but only the last submission will be used for grading. 
+-->
+    </div>
+
+    <p class="section">
+      <h2>How projects are graded / how to maximize your points</h2>
+      Things to keep in mind to receive full marks:
+      <ol>
+	<li>
+	  Submit all required items (as described above) on time.
+	</li>
+	<li>
+	  Do not submit any .java files that do not compile!
+	  Whichever Step you submit, your project should compile and
+	  run correctly at that step.  If it doesn't, you should be
+	  submitting the previous step.
+	</li>
+	<li>
+	  Make sure your output matches the example output in all
+	  ways.
+	</li>
+	<li>
+	  Use good object-oriented design!  The means adhering to the
+	  principles of <em>ecapsulation</em>, <em>data/information
+	  hiding</em>, inheritance and polymorphism. 
+	</li>
+	<li>
+	  Practice good Java Style.
+	  This means proper indentation, use of whitespace within
+	  lines of code, logical organization of chunks of code, 
+	  proper naming of classes, methods, fields and constants in
+	  accordance with Java conventions.
+	  This means good commenting: your name & alpha in every file,
+	  and descriptive comments for each public method at a minimum!
+	</li>
+      </ol>	     
+
+      Most important:  Look at the <a href="grading.html">the grading sheet</a>!
+    </p>
+
+
+  </body>
+</html>
