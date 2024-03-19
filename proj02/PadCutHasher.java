@@ -27,7 +27,13 @@ public class PadCutHasher implements Hasher
     while(output.length() < 16)
     {
       if(i < password.length())
+      {
+        int c = (int)password.charAt(i);
+        if(c < 42 || c > 122)
+          throw new Throwable(getAlgName() + ": bad char '" + (char)c + "'");
         output += password.charAt(i);
+ 
+      } 
       else
         output += 'x';
 
