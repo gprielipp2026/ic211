@@ -11,6 +11,19 @@ public class ShiftPlusHasher implements Hasher
 
   private Encryptor encryptor;
   private String iv; // initialization vector
+
+  /**
+   * Constructur (Encryptor)
+   */
+  public ShiftPlusHasher(Encryptor ext)
+  {
+    encryptor = ext;
+    iv = "GO_NAVY_2018^mid";
+  }
+
+  /**
+   * Constructor(Encryptor, String)
+   */
   public ShiftPlusHasher(Encryptor extension, String initializationVector)
   {
     encryptor = extension;
