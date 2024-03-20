@@ -1,0 +1,18 @@
+Caesar.java:37:        throw new Throwable("init: char '" + k_i + "' invalid");
+Caesar.java:59:        throw new Throwable("encrypt: char '" + pc + "' invalid");
+Caesar.java:85:        throw new Throwable("decrypt: char '" + cc + "' invalid");
+Clear.java:12:        throw new Throwable(getAlgName() + ": '" + cc + "'invalid");
+Clear.java:22:        throw new Throwable(getAlgName() + ": '" + cc + "'invalid");
+Clear.java:35:        throw new Throwable(getAlgName() + ": '" + cc + "'invalid");
+Data.java:35:      throw new Throwable("Error! Encryption algorithm '" + algo + "' not supported.");
+Data.java:62:      throw new Throwable("data did not contain a label");
+PadCutHasher.java:33:          throw new Throwable(getAlgName() + ": bad char '" + (char)c + "'");
+ShiftPlusHasher.java:71:      //throw new Throwable("Invalid char '" + iv.charAt(i) + "' " + i + " iterations into shift+" + encryptor.getAlgName());
+TestHashers.java:46:      throw new Throwable("Algorithm: '" + alg + "' was not found");
+User.java:75:      throw new Throwable("Error! Hash algorithm '" + algoName + "' not supported.");
+User.java:98:      throw new Throwable("Error! File 'name' improperly formatted");
+Vault.java:93:        throw new Throwable("Error! Usernmae '" + username + "' already in use.");
+Vault.java:126:    throw new Throwable(authenticatedUser.getUsername() + " doesn't have '" + label + "' as a label.");
+Vigenere.java:36:        throw new Throwable("init: char '" + k_i + "' invalid");
+Vigenere.java:58:        throw new Throwable("encrypt: char '" + pc + "' invalid");
+Vigenere.java:86:        throw new Throwable("decrypt: char '" + cc + "' invalid");
