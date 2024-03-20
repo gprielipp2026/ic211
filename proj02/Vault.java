@@ -159,7 +159,7 @@ public class Vault
     // display the usage if the arguments were messed up
     if(fileInd == -1) 
     {
-      System.out.println("usage: java Vault [-au] <vault-file>");
+      System.out.println("usage: java Vault [-au] <filename>");
       System.exit(1);
     }
 
