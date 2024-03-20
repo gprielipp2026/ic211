@@ -39,7 +39,17 @@ public class Vault
       {
         nextUser = User.read(in);
         vault.users.add( nextUser );
-      }  
+      } 
+      else if (type.equals("data"))
+      {
+        Data data = Data.read(in);
+        // I'm assuming that user's information come before their data
+        for(User user : vault.users)
+        {
+          if(user.getUsername().equals(data.getUsername()))
+            user.add(data);
+        }
+      } 
     }
 
     return vault;

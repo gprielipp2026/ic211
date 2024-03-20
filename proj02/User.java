@@ -152,11 +152,10 @@ public class User implements Comparable<User>, Iterable<Data>
   /**
    * add a piece of data if it matches
    */
-  public boolean add(Data data) throws Throwable
+  public boolean add(Data data)  
   {
     if(data.getUsername().equals(username))
     {
-      data.decrypt(password);
       entries.add(data);      
       return true;
     } 
@@ -174,7 +173,7 @@ public class User implements Comparable<User>, Iterable<Data>
   /**
    * Print the labels of the entries
    */
-  public void printLabels()
+  public void printLabels() 
   {
     for(Data entry : entries)
     {

@@ -41,11 +41,12 @@ public class Data
    */
   private Data()
   {
-    if(algs == null)
+    if(Data.algs == null)
     {
-      algs.add( new Clear() );
-      algs.add( new Caesar() );
-      algs.add( new Vigenere() );
+      Data.algs = new ArrayList<Encryptor>();
+      Data.algs.add( new Clear() );
+      Data.algs.add( new Caesar() );
+      Data.algs.add( new Vigenere() );
     }
   }
 
@@ -53,20 +54,15 @@ public class Data
    * Separate the label and the text after
    * decrypting the ciphertext
    */
-  private void split(String decoded)
+  private void split(String decoded) throws Throwable
   {
-    label = "";
-    for(int i = 0; i < decoded.length(); i++)
-    {
-      char c = decoded.charAt(i);
-      if(c == '_')
-      {
-        plaintext = decoded.substring(i+1);
-        break;
-      }
+    int ind = decoded.indexOf('_');
+    
+    if(ind == -1) // did not find it
+      throw new Throwable("data did not contain a label");
 
-      label += c;
-    }
+    label = decoded.substring(0, ind);
+    plaintext = decoded.substring(ind+1);
   }
 
   /**
