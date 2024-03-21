@@ -7,17 +7,6 @@ digraph "Design" {
 "PadCutHasher" -> "Hasher";
 "ShiftPlusHasher" -> "Encryptor";
 "ShiftPlusHasher" -> "Hasher";
-"TestEncryptors" -> "Caesar";
-"TestEncryptors" -> "Clear";
-"TestEncryptors" -> "Encryptor";
-"TestEncryptors" -> "Vigenere";
-"TestHashers" -> "Caesar";
-"TestHashers" -> "Clear";
-"TestHashers" -> "Encryptor";
-"TestHashers" -> "Hasher";
-"TestHashers" -> "PadCutHasher";
-"TestHashers" -> "ShiftPlusHasher";
-"TestHashers" -> "Vigenere";
 "User" -> "Caesar";
 "User" -> "Clear";
 "User" -> "Data";

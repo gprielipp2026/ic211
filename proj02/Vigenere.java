@@ -33,7 +33,7 @@ public class Vigenere implements Encryptor
     {
       int valk_i = (int) k_i;
       if(valk_i < 42 || valk_i > 122)
-        throw new Throwable("init: char '" + k_i + "' invalid");
+        throw new InvalidChar("key", k_i); 
     }
     this.key = key;
   }
@@ -55,7 +55,7 @@ public class Vigenere implements Encryptor
       int p = pc - 42;
 
       if(p < 0 || p > 80)
-        throw new Throwable("encrypt: char '" + pc + "' invalid");
+        throw new InvalidChar("plaintext", pc); 
 
       int c = (p + k) % 81;
       char cc = (char)(42 + c);
@@ -83,7 +83,7 @@ public class Vigenere implements Encryptor
       int c = cc - 42;
 
       if(c < 0 || c > 80) // between 42-122
-        throw new Throwable("decrypt: char '" + cc + "' invalid");
+        throw new InvalidChar("ciphertext", cc); 
 
       int p = (c + (81 - k)) % 81;
       char pc = (char)(42 + p);

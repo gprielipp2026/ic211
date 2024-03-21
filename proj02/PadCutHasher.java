@@ -30,7 +30,7 @@ public class PadCutHasher implements Hasher
       {
         int c = (int)password.charAt(i);
         if(c < 42 || c > 122)
-          throw new Throwable(getAlgName() + ": bad char '" + (char)c + "'");
+          throw new InvalidChar("password", password.charAt(i)); 
         output += password.charAt(i);
  
       } 

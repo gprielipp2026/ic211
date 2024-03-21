@@ -22,6 +22,13 @@ public class Data
   private static ArrayList<Encryptor> algs = null;
   private static Encryptor getEncryptor(String algo) throws Throwable
   {
+    if(Data.algs == null)
+    {
+      Data.algs = new ArrayList<Encryptor>();
+      Data.algs.add( new Clear() );
+      Data.algs.add( new Caesar() );
+      Data.algs.add( new Vigenere() );
+    }    
     boolean found = false;
     for(Encryptor alg : algs)
     {
@@ -32,7 +39,7 @@ public class Data
       }
     } 
     if(!found)
-      throw new Throwable("Error! Encryption algorithm '" + algo + "' not supported.");
+      throw new AlgorithmNotSupported("Encryption", algo); 
     return null;
   }
 
@@ -41,13 +48,7 @@ public class Data
    */
   private Data()
   {
-    if(Data.algs == null)
-    {
-      Data.algs = new ArrayList<Encryptor>();
-      Data.algs.add( new Clear() );
-      Data.algs.add( new Caesar() );
-      Data.algs.add( new Vigenere() );
-    }
+
   }
 
   /**
@@ -57,9 +58,9 @@ public class Data
   private void split(String decoded) throws Throwable
   {
     int ind = decoded.indexOf('_');
-    
+
     if(ind == -1) // did not find it
-      throw new Throwable("data did not contain a label");
+      throw new NoLabel(); 
 
     label = decoded.substring(0, ind);
     plaintext = decoded.substring(ind+1);
@@ -91,7 +92,7 @@ public class Data
   public static Data read(Scanner in) throws Throwable
   {
     Data data = new Data();
-    
+
     data.username = in.next();
     data.encalg = getEncryptor( in.next()  );
     data.ciphertext = in.next();

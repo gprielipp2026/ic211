@@ -67,9 +67,8 @@ public class ShiftPlusHasher implements Hasher
     {
       int c = (int)iv.charAt(i);
 
-      //if(c < 42 || c > 122)
-      //throw new Throwable("Invalid char '" + iv.charAt(i) + "' " + i + " iterations into shift+" + encryptor.getAlgName());
-      //// need to throw some error??
+      if(c < 42 || c > 122)
+        throw new InvalidChar("initialization vector", iv.charAt(i)); 
 
       int k = c % 16;
       iv = shift(iv, k);

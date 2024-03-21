@@ -19,6 +19,7 @@ public class User implements Comparable<User>, Iterable<Data>
   private String username;
   private String hashedPswd;
   private Hasher algo;
+  private String algorithmName;
   private String password = null;
   private ArrayList<Data> entries = null;
   private static ArrayList<Hasher> hashers = null;
@@ -31,16 +32,6 @@ public class User implements Comparable<User>, Iterable<Data>
     hashedPswd = null;
     algo = null;
     entries = new ArrayList<Data>();
-
-    if(hashers == null)
-    {
-      hashers = new ArrayList<Hasher>();
-      hashers.add( new PadCutHasher() );
-      hashers.add( new ShiftPlusHasher( new Caesar() ) );
-      hashers.add( new ShiftPlusHasher( new Vigenere() ) );
-      hashers.add( new ShiftPlusHasher( new Clear() ) );
-
-    }
   }
 
   /**
@@ -49,7 +40,8 @@ public class User implements Comparable<User>, Iterable<Data>
   public User(String username, String password, String algo) throws Throwable
   {
     this.username = username;
-    this.algo = User.getHasher(algo);
+    this.algo = getHasher(algo);
+    this.algorithmName = algo;
     this.hashedPswd = this.algo.hash(password); 
     this.password = password;
     this.entries = new ArrayList<Data>();
@@ -61,6 +53,15 @@ public class User implements Comparable<User>, Iterable<Data>
    */
   private static Hasher getHasher(String algoName) throws Throwable
   {
+    if(hashers == null)
+    {
+      hashers = new ArrayList<Hasher>();
+      hashers.add( new PadCutHasher() );
+      hashers.add( new ShiftPlusHasher( new Caesar() ) );
+      hashers.add( new ShiftPlusHasher( new Vigenere() ) );
+      hashers.add( new ShiftPlusHasher( new Clear() ) );
+
+    }
     boolean found = false;
 
     for(Hasher h : hashers)
@@ -72,7 +73,7 @@ public class User implements Comparable<User>, Iterable<Data>
       }
     }
     if(!found)
-      throw new Throwable("Error! Hash algorithm '" + algoName + "' not supported.");
+      throw new AlgorithmNotSupported("Hash", algoName); 
 
     return null;
   }
@@ -81,24 +82,20 @@ public class User implements Comparable<User>, Iterable<Data>
    * Read from the Scanner in the format:
    * <username> <algorithm> <hashedPswd>
    */
-  public static User read(Scanner in) throws Throwable
+  public static User read(String fn, Scanner in) throws Throwable
   {
     User user = new User();
 
-    String algoName;
-
     try {
       user.username = in.next();
-      algoName = in.next();
+      user.algorithmName = in.next();
       user.hashedPswd = in.next();
-
-
+      //user.algo = user.getHasher(user.algorithmName);
     } catch(NoSuchElementException e)
     {
-      throw new Throwable("Error! File 'name' improperly formatted");
+      throw new WrongFormat(fn); 
     }
 
-    user.algo = User.getHasher(algoName);
 
     return user;
   }
@@ -110,6 +107,8 @@ public class User implements Comparable<User>, Iterable<Data>
    */
   public boolean authenticate(String password) throws Throwable
   {
+    algo = User.getHasher(algorithmName);
+
     if( algo.hash(password).equals(hashedPswd) )
     {
       this.password = password;
@@ -181,7 +180,15 @@ public class User implements Comparable<User>, Iterable<Data>
     }
   }
 
-//-----------------------------------------------------------------------------------
+  /**
+   * Initializes this.algo from getHasher(algoName)
+   */
+  public void init() throws Throwable
+  {
+    algo = getHasher(algorithmName);
+  }
+
+  //-----------------------------------------------------------------------------------
   public Iterator<Data> iterator()
   {
     return entries.iterator();

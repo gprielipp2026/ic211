@@ -43,6 +43,6 @@ public class TestHashers
     }
 
     if(!found)
-      throw new Throwable("Algorithm: '" + alg + "' was not found");
+      throw new AlgorithmNotSupported("Hashing", alg); 
   }
 }

@@ -26,7 +26,7 @@ public class Vault
   /**
    * Read from a vault file and create User's
    */
-  public static Vault read(Scanner in) throws Throwable
+  public static Vault read(String fn, Scanner in) throws Throwable
   {
     Vault vault = new Vault();
 
@@ -37,7 +37,7 @@ public class Vault
 
       if(type.equals("user"))
       {
-        nextUser = User.read(in);
+        nextUser = User.read(fn, in);
         vault.users.add( nextUser );
       } 
       else if (type.equals("data"))
@@ -64,6 +64,8 @@ public class Vault
   {
     for(User user : users)
     {
+      // make sure it has the proper algorithm information ready
+      user.init();
       if(user.compareTo(username) == 0 &&
           user.authenticate(password))
       {
@@ -90,7 +92,7 @@ public class Vault
     for(User other : users)
     {
       if(user.compareTo(other) == 0)
-        throw new Throwable("Error! Usernmae '" + username + "' already in use.");
+        throw new UserExists(username); 
     }
   }
 
@@ -110,6 +112,7 @@ public class Vault
   {
     for(User usr : users)
     {
+      usr.init();
       usr.write(pw);
     }
   }
@@ -123,7 +126,7 @@ public class Vault
     {
       if(data.match(label)) return data.getText();
     }
-    throw new Throwable(authenticatedUser.getUsername() + " doesn't have '" + label + "' as a label.");
+    throw new NoLabel(authenticatedUser.getUsername(), label); 
   }
 
   /**
@@ -169,10 +172,9 @@ public class Vault
     catch (IOException e) { System.out.println("Error! File '" + args[fileInd] + "' could not be opened."); System.exit(1); }
 
     // essential vault for program
-    Vault vault = Vault.read(vfIn);
+    Vault vault = Vault.read(args[fileInd], vfIn);
 
     // variables for main loop
-    Scanner in = new Scanner(System.in);
     Console pswdIn = System.console();
     String username;
     String password;
@@ -180,73 +182,87 @@ public class Vault
 
     // get the user information 
     System.out.print("username: ");
-    username = in.next();
+    username = pswdIn.readLine();
 
     System.out.print("password: ");
     password = new String(pswdIn.readPassword());
 
+    Scanner in = new Scanner(System.in);
+
     // if they are adding a user:
     // add the user
-    if(flags)
-    {
-      System.out.print("Hash algorithm: ");
-      String algo = in.next();
+    try{
+      if(flags)
+      {
+        System.out.print("Hash algorithm: ");
+        //String algo = in.next();
+        String algo = pswdIn.readLine();
+        User user = null;
 
-      User user = new User(username, password, algo);
+        user = new User(username, password, algo);  
 
-      vault.verify(user, username);
+        vault.verify(user, username);
+        PrintWriter pw = null;
+        try{ pw = new PrintWriter(new File(args[fileInd])); }
+        catch(FileNotFoundException e) { e.printStackTrace(); }
 
-      PrintWriter pw = null;
-      try{ pw = new PrintWriter(new File(args[fileInd])); }
-      catch(FileNotFoundException e) { e.printStackTrace(); }
+        // write the user to the file
+        vault.add(user);
 
-      // write the user to the file
-      vault.add(user);
-      vault.write(pw);
+        vault.write(pw);
 
-      if(pw != null)
-        pw.close();
-      
-      System.out.println("User added!");
-      System.exit(0);
-    }
+        if(pw != null)
+          pw.close();
 
+        System.exit(0);
+      }
 
-    // authenticate them
-    if(vault.authenticate(username, password))
-    {
-      System.out.println("Access granted!");
-    }
-    else
-    {
-      System.out.println("Access denied!");
+      // authenticate them
+      if(vault.authenticate(username, password))
+      {
+        System.out.println("Access granted!");
+      }
+      else
+      {
+        System.out.println("Access denied!");
+        System.exit(1);
+      }
+
+      // main loop
+      do
+      { 
+        // get the next command
+        System.out.print("> ");
+        cmd = in.next();
+
+        // handle the different commands
+        if(cmd.equals("labels"))
+        {
+          // print all available labels in the user's entries
+          vault.printLabels();
+        } 
+        else if(cmd.equals("get"))
+        {
+          // get the entry from a user
+          String label = in.next();
+          System.out.println( vault.getEntry(label) ); 
+        }
+        else if(!cmd.equals("quit"))
+        {
+          System.out.println("Unknown command '" + cmd + "'.");
+        }
+      } while(!cmd.equals("quit"));
+
+    } catch(AlgorithmNotSupported exc) {
+      System.out.println(exc.getMessage());
       System.exit(1);
-    }
-
-    // main loop
-    do
-    { 
-      // get the next command
-      System.out.print("> ");
-      cmd = in.next();
-
-      // handle the different commands
-      if(cmd.equals("labels"))
-      {
-        // print all available labels in the user's entries
-        vault.printLabels();
-      } 
-      else if(cmd.equals("get"))
-      {
-        // get the entry from a user
-        String label = in.next();
-        System.out.println( vault.getEntry(label) ); 
-      }
-      else if(!cmd.equals("quit"))
-      {
-        System.out.println("Unknown command '" + cmd + "'.");
-      }
-    } while(!cmd.equals("quit"));
-
-  }
-}
+    } catch(InvalidChar ic) {
+      System.out.println(ic.getMessage());
+      System.exit(1);
+    } catch(UserExists ue) {
+      System.out.println(ue.getMessage());
+      System.exit(1);
+    } 
+    // end catch
+  }// end main
+}// end class

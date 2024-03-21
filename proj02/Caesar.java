@@ -34,7 +34,7 @@ public class Caesar implements Encryptor
     {
       int valk_i = (int) k_i;
       if(valk_i < 42 || valk_i > 122)
-        throw new Throwable("init: char '" + k_i + "' invalid");
+        throw new InvalidChar("key", k_i);
       shift += valk_i - 42;
     }
     shift = shift % 81;
@@ -56,7 +56,7 @@ public class Caesar implements Encryptor
       int k = shift - 42;
       int p = (int)pc - 42;
       if(p < 0 || p > 80) // between 42-122
-        throw new Throwable("encrypt: char '" + pc + "' invalid");
+        throw new InvalidChar("plaintext", pc); 
 
       int c = (p + k) % 81;
       char cc = (char)(42 + c);
@@ -82,7 +82,7 @@ public class Caesar implements Encryptor
       int k = shift - 42;
       int c = (int)cc - 42;
       if(c < 0 || c > 80) // between 42-122
-        throw new Throwable("decrypt: char '" + cc + "' invalid");
+        throw new InvalidChar("ciphertext", cc); 
 
       int p = (c + (81 - k)) % 81;
       char pc = (char)(42 + p);

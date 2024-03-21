@@ -9,7 +9,7 @@ public class Clear implements Encryptor {
     {
       int c = (int)cc;
       if(c < 42 || c > 122)
-        throw new Throwable(getAlgName() + ": '" + cc + "'invalid");
+        throw new InvalidChar("key", cc); 
     }
   }
 
@@ -19,7 +19,7 @@ public class Clear implements Encryptor {
     {
       int c = (int)cc;
       if(c < 42 || c > 122)
-        throw new Throwable(getAlgName() + ": '" + cc + "'invalid");
+        throw new InvalidChar("plaintext", cc); 
     }
 
 
@@ -32,7 +32,7 @@ public class Clear implements Encryptor {
     {
       int c = (int)cc;
       if(c < 42 || c > 122)
-        throw new Throwable(getAlgName() + ": '" + cc + "'invalid");
+        throw new InvalidChar("ciphertext", cc); 
     }
 
     return cipher;  
