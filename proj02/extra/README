@@ -1,0 +1,5 @@
+# plainPswds.txt
+- has the passwords the cracker is going to try and find from the ciphertext
+
+# cipherText.txt
+- has the encrypted "SUPER^secret_[Message];533";

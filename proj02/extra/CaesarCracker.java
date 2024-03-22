@@ -11,7 +11,7 @@ import java.util.*;
 public class CaesarCracker extends Caesar implements Cracker
 {
   // holds the probability of a character appearing
-  private static Map<char, double> probOfChar; 
+  private static HashMap<Character, Double> probOfChar; 
   
   public CaesarCracker()
   {
@@ -20,7 +20,7 @@ public class CaesarCracker extends Caesar implements Cracker
 
   private static void fillMap()
   {
-    probOfChar = new Map<char, double>();
+    probOfChar = new HashMap<Character, Double>();
     probOfChar.put('e', .1202);
     probOfChar.put('t', .0910);
     probOfChar.put('a', .0812);
@@ -51,23 +51,31 @@ public class CaesarCracker extends Caesar implements Cracker
   }
 
   /**
-   * Fills out a Map<char, double> of the probs in a string
+   * Fills out a HashMap<Character, Double> of the probs in a string
    */
-  private static Map<char, double> genProbs(String str)
+  private static HashMap<Character, Double> genProbs(String str)
   {
     final String alpha = "abcdefghijklmnopqrstuvwxyz"; // I know this isn't the whole available charSet
-    Map<char, double> probs = new Map<char, double>();
+    HashMap<Character, Double> probs = new HashMap<Character, Double>();
     for(int i = 0; i < alpha.length(); i++)
-      probs.put(alpha.get(i), 0.00);
+      probs.put(alpha.charAt(i), 0.00);
 
     int ttlChars = 0;
 
     // sum character occurences
     for(int i = 0; i < str.length(); i++)
     {
-      if(probs.containsKey(str.get(i)))
+      char c = str.charAt(i);
+      if (c >= 'A' && c <= 'Z')
       {
-        probs.put(str.get(i), probs.get(str.get(i)) + 1.00);
+        int cc = (int)c;
+        int newcc = 'a' + (cc - 'A');
+        c = (char)newcc;
+      }
+
+      if(probs.containsKey(c))
+      {
+        probs.put(c, probs.get(c) + 1.00);
         ttlChars++;
       }
     }
@@ -82,10 +90,10 @@ public class CaesarCracker extends Caesar implements Cracker
   }
 
   /**
-   * returns the percentage a Map<char, probs> matches probOfChar within a given
+   * returns the percentage a HashMap<char, probs> matches probOfChar within a given
    * tolerance (let's say 1%, 0.01)
    */
-  private static double looseMatch(Map<char, double> probs)
+  private static double looseMatch(Map<Character, Double> probs)
   {
     double prob = 0.00;
     final double tolerance = 0.01; // 1%
@@ -112,13 +120,13 @@ public class CaesarCracker extends Caesar implements Cracker
       fillMap();
     }
 
-    Map<Info, double> matchProb = new Map<Info, double>();
+    HashMap<Info, Double> matchProb = new HashMap<Info, Double>();
     for(Info info : arr)
     {
       // remove the <$key> (should be 3 chars long)
       String plain = info.toString().substring(0,info.toString().length() - 3);
 
-      Map<char, double> localProbs = genProbs(plain);
+      HashMap<Character, Double> localProbs = genProbs(plain);
 
       matchProb.put(info, looseMatch(localProbs));
     }
@@ -150,8 +158,10 @@ public class CaesarCracker extends Caesar implements Cracker
       char[] key = {(char)charCode};
       try { init(key); }
       catch (Throwable t) { t.printStackTrace(); }
-
-      String attempt = decode(cipher);
+      
+      String attempt = "";
+      try { attempt = decrypt(cipher); }
+      catch (Throwable t) { t.printStackTrace(); }
       Info info = new Info(attempt, new String(key));
       infos.add(info);
     }
