@@ -16,6 +16,27 @@ public class Data
   private String ciphertext;
   private String label;
   private String plaintext;
+   /**
+   * Create a new Data from 
+   * username, algName, label, value
+   */
+  public Data(String uname, String pswd, String algName, String label, String value) throws Throwable
+  {
+    username = uname;
+    for(int i = 0; i < label.length(); i++)
+    {
+      int c = label.charAt(i);
+      if(c < 42 || c > 122 || label.charAt(i) == '_')
+        throw new BadLabel(label);
+    }
+
+    this.label = label;
+    this.plaintext = value;
+    encalg = getEncryptor(algName);
+    encalg.init(pswd.toCharArray());
+    ciphertext = encalg.encrypt(label + "_" + value);
+  } 
+
   /**
    * Figure out which algorithm to use
    */
@@ -130,6 +151,8 @@ public class Data
    */
   public void write(PrintWriter pw)
   {
+    if(pw.checkError()) System.out.println("Data: it is closed?");
     pw.println("data " + username + " " + encalg.getAlgName() + " " + ciphertext);
   }
+
 }

@@ -112,8 +112,23 @@ public class Vault
   {
     for(User usr : users)
     {
-      usr.init();
+      try { usr.init(); } 
+      catch(Throwable t) { t.printStackTrace(); }
+  
+            
       usr.write(pw);
+    }
+    for(User usr : users)
+    {
+      //boolean itered = false;
+      for(Data d : usr)
+      {
+        //System.out.println("writing: " + usr.getUsername() + "<" + d.getLabel() + ">");
+        d.write(pw);
+        //itered = true;
+      }
+      //if(!itered)
+      //System.out.println("writing: " + usr.getUsername() + "<no data>");
     }
   }
 
@@ -135,6 +150,14 @@ public class Vault
   public void printLabels()
   {
     authenticatedUser.printLabels();
+  }
+
+  /**
+   * Add a piece of data from the user input
+   */
+  public void addFrom(String algName, String label, String value) throws Throwable
+  {
+    authenticatedUser.addFrom(algName, label, value);
   }
 
   /**
@@ -192,6 +215,10 @@ public class Vault
     // if they are adding a user:
     // add the user
     try{
+      PrintWriter pw = null;
+      try{ pw = new PrintWriter(new File(args[fileInd])); }
+      catch(FileNotFoundException e) { e.printStackTrace(); }
+
       if(flags)
       {
         System.out.print("Hash algorithm: ");
@@ -202,9 +229,6 @@ public class Vault
         user = new User(username, password, algo);  
 
         vault.verify(user, username);
-        PrintWriter pw = null;
-        try{ pw = new PrintWriter(new File(args[fileInd])); }
-        catch(FileNotFoundException e) { e.printStackTrace(); }
 
         // write the user to the file
         vault.add(user);
@@ -245,13 +269,45 @@ public class Vault
         {
           // get the entry from a user
           String label = in.next();
-          System.out.println( vault.getEntry(label) ); 
+          try {
+            System.out.println( vault.getEntry(label) ); 
+
+          } catch(NoLabel nl) {
+            System.out.println(nl.getMessage());
+          }
+
+        }
+        else if(cmd.equals("add"))
+        {
+          String algName = in.next();
+          String label = in.next();
+          String value = in.next();
+          try {
+            vault.addFrom(algName, label, value);
+          } catch(BadLabel bl) {
+            System.out.println(bl.getMessage());
+          }       
+
+          //for(User u : vault.users)
+          //{
+            //boolean itered = false;
+            //for(Data d : u)
+            //{
+              //System.out.println(u.getUsername() + "<" + d.getLabel() + ">");
+              //itered = true;
+            //}
+            //if(!itered)
+              //System.out.println(u.getUsername() + "<no data>");
+          //}
+
         }
         else if(!cmd.equals("quit"))
         {
           System.out.println("Unknown command '" + cmd + "'.");
         }
       } while(!cmd.equals("quit"));
+
+      vault.write(pw);
 
     } catch(AlgorithmNotSupported exc) {
       System.out.println(exc.getMessage());
@@ -262,7 +318,10 @@ public class Vault
     } catch(UserExists ue) {
       System.out.println(ue.getMessage());
       System.exit(1);
-    } 
+    } catch(Throwable t) {
+      // hail Mary something went wrong
+      t.printStackTrace();
+    }
     // end catch
   }// end main
 }// end class

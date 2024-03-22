@@ -57,9 +57,9 @@ public class User implements Comparable<User>, Iterable<Data>
     {
       hashers = new ArrayList<Hasher>();
       hashers.add( new PadCutHasher() );
-      hashers.add( new ShiftPlusHasher( new Caesar() ) );
-      hashers.add( new ShiftPlusHasher( new Vigenere() ) );
-      hashers.add( new ShiftPlusHasher( new Clear() ) );
+      hashers.add( new FullShiftPlusHasher( new Caesar() ) );
+      hashers.add( new FullShiftPlusHasher( new Vigenere() ) );
+      hashers.add( new FullShiftPlusHasher( new Clear() ) );
 
     }
     boolean found = false;
@@ -145,6 +145,7 @@ public class User implements Comparable<User>, Iterable<Data>
    */
   public void write(PrintWriter pw)
   {
+    if(pw.checkError()) System.err.println("PW CLOSED !!!!");
     pw.println("user " + username + " " + algo.getAlgName() + " " + hashedPswd );
   }
 
@@ -186,6 +187,24 @@ public class User implements Comparable<User>, Iterable<Data>
   public void init() throws Throwable
   {
     algo = getHasher(algorithmName);
+  }
+
+  /**
+   * Add a piece of data from
+   * algName, label, value
+   */
+  public void addFrom(String algName, String label, String value) throws Throwable
+  {
+    for(int i = 0; i < entries.size(); i++)
+    {
+      if(entries.get(i).getLabel().equals(label))
+      {
+        entries.set(i, new Data(username, password, algName, label, value));
+        return;
+      }
+    }
+    
+    entries.add( new Data(username, password, algName, label, value) );
   }
 
   //-----------------------------------------------------------------------------------

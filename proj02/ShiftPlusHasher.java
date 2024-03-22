@@ -78,4 +78,12 @@ public class ShiftPlusHasher implements Hasher
 
     return iv;
   }
+
+  /**
+   * only allow extensions to set the iv
+   */
+  protected void setIV(String newIV)
+  {
+    iv = newIV;
+  }
 }

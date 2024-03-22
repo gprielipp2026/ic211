@@ -18,9 +18,9 @@ public class TestHashers
 
     ArrayList<Hasher> hashers = new ArrayList<Hasher>();
     hashers.add(new PadCutHasher());
-    hashers.add(new ShiftPlusHasher(new Caesar(), iv));
-    hashers.add(new ShiftPlusHasher(new Vigenere(), iv));
-    hashers.add(new ShiftPlusHasher(new Clear(), iv));
+    hashers.add(new FullShiftPlusHasher(new Caesar(), iv));
+    hashers.add(new FullShiftPlusHasher(new Vigenere(), iv));
+    hashers.add(new FullShiftPlusHasher(new Clear(), iv));
 
     Scanner in = new Scanner(System.in);
 
