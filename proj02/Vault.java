@@ -242,12 +242,17 @@ public class Vault
       }
 
       // authenticate them
-      if(vault.authenticate(username, password))
-      {
-        System.out.println("Access granted!");
-      }
-      else
-      {
+      try{
+        if(vault.authenticate(username, password))
+        {
+          System.out.println("Access granted!");
+        }
+        else
+        {
+          System.out.println("Access denied!");
+          System.exit(1);
+        }
+      } catch(InvalidChar ic) {
         System.out.println("Access denied!");
         System.exit(1);
       }

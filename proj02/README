@@ -1,0 +1,12 @@
+# George Prielipp (265112)
+
+# Steps Completed
+1. Full submit completion (46/46)
+2. Adding data (to my extent of knowledge on its behavior) functions properly
+3. "Full" shift+ hashing operates as intended
+
+# Errors
+As far as I can tell, there are no errors with my implementation and it
+can be extended with new Hashing and Encryption algorithms with small
+changes to User and Data (a ".add(new Algorithm()" in the getHasher() or
+getEncryptor() methods)

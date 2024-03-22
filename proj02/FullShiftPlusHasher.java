@@ -58,13 +58,13 @@ public class FullShiftPlusHasher extends ShiftPlusHasher
     String nextIV = "";
     for(String block : blocks)
     {
-      System.out.println("Hashing: " + block);
+//      System.out.println("Hashing: " + block);
       
       nextIV = super.hash(block);
       super.setIV(nextIV); 
     
-      System.out.println("Next IV: " + nextIV);
-      System.out.println();
+ //     System.out.println("Next IV: " + nextIV);
+ //     System.out.println();
     }
     super.setIV("GO_NAVY_2018^mid");
     return nextIV;// is the final hash
