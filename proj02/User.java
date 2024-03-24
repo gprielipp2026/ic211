@@ -177,7 +177,9 @@ public class User implements Comparable<User>, Iterable<Data>
   {
     for(Data entry : entries)
     {
-      System.out.println(entry.getLabel());
+      try{ entry.decrypt(password); System.out.println(entry.getLabel()); }
+      catch (NoLabel nl) { System.out.println(nl.getMessage()); }
+      catch (Throwable t) { t.printStackTrace(); }
     }
   }
 

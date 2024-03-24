@@ -71,11 +71,7 @@ public class Vault
       {
         authenticatedUser = user;
 
-        for(Data d : authenticatedUser)
-        {
-          d.decrypt(password);
-        }
-
+        
         return true;
       } 
     }
@@ -278,7 +274,7 @@ public class Vault
             System.out.println( vault.getEntry(label) ); 
 
           } catch(NoLabel nl) {
-            System.out.println(nl.getMessage());
+            //System.out.println(nl.getMessage());
           }
 
         }
@@ -313,6 +309,12 @@ public class Vault
       } while(!cmd.equals("quit"));
 
       vault.write(pw);
+      // I was having an issue where the last line of the file was
+      // not making it into the file
+      // I looked it up and found out that PrintWriter is Buffered
+      // I just forgot to close the PrintWriter, so it was holding
+      // onto the data I had sent it. Very unfortunate
+      pw.close();
 
     } catch(AlgorithmNotSupported exc) {
       System.out.println(exc.getMessage());

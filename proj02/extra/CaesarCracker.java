@@ -171,6 +171,13 @@ public class CaesarCracker extends Caesar implements Cracker
 
   public static void main(String[] args)
   {
+    if(args.length != 1)
+    {
+      System.out.println("Usage: java CaesarCracker <ciphertext password>");
+    }
 
+    CaesarCracker cc = new CaesarCracker();
+
+    System.out.println(cc.crack(args[0]));
   }
 }

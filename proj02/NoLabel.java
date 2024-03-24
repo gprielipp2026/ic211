@@ -6,9 +6,9 @@
 
 public class NoLabel extends Exception
 {
-  public NoLabel ()
+  public NoLabel (String corrupt)
   {
-    super("data did not contain a label");
+    super("Error! corrupted entry '" + corrupt + "' in vault file.");
   }
 
   public NoLabel(String username, String label)

@@ -81,7 +81,7 @@ public class Data
     int ind = decoded.indexOf('_');
 
     if(ind == -1) // did not find it
-      throw new NoLabel(); 
+      throw new NoLabel(ciphertext); 
 
     label = decoded.substring(0, ind);
     plaintext = decoded.substring(ind+1);
@@ -152,6 +152,7 @@ public class Data
   public void write(PrintWriter pw)
   {
     if(pw.checkError()) System.out.println("Data: it is closed?");
+    //System.out.println("writing: " + username + "<" + ciphertext + ">");
     pw.println("data " + username + " " + encalg.getAlgName() + " " + ciphertext);
   }
 

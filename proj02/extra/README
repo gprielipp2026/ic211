@@ -3,3 +3,9 @@
 
 # cipherText.txt
 - has the encrypted "SUPER^secret_[Message];533";
+
+cat plainPswds.txt | xargs -I % bash -c "echo -e '% e "SUPER^secret[Message]533"'" | xargs -I % bash -c "java Caesar %" | cut -d " " -f4 > cipherText.txt
+
+# cracked.txt
+cat cipherText.txt | xargs -I % bash -c "java CaesarCracker '%'" > cracked.txt
+
