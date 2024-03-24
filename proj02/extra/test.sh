@@ -4,5 +4,5 @@
 #cat cipherText.txt | xargs -I % bash -c "java CaesarCracker '%'" > cracked.txt
 #cat cracked.txt
 
-cat /usr/share/dict/american-english | xargs  -I % bash -c "java Caesar % e 'SUPER^secret[Message];533'"
+#cat /usr/share/dict/american-english | xargs  -I % bash -c "java Caesar % e 'SUPER^secret[Message];533'"
 
