@@ -316,8 +316,8 @@ public class Vault
       // onto the data I had sent it. Very unfortunate
       pw.close();
 
-      //} catch(AlgorithmNotSupported exc) {
-      //System.out.println(exc.getMessage());
+    } catch(AlgorithmNotSupported exc) {
+      System.out.println(exc.getMessage());
       //System.exit(1);
     } catch(InvalidChar ic) {
       System.out.println(ic.getMessage());
