@@ -34,7 +34,7 @@ public class Vault
     while( in.hasNext() )
     {
       String type = in.next();
-
+      
       if(type.equals("user"))
       {
         nextUser = User.read(fn, in);
@@ -116,15 +116,7 @@ public class Vault
     }
     for(User usr : users)
     {
-      //boolean itered = false;
-      for(Data d : usr)
-      {
-        //System.out.println("writing: " + usr.getUsername() + "<" + d.getLabel() + ">");
-        d.write(pw);
-        //itered = true;
-      }
-      //if(!itered)
-      //System.out.println("writing: " + usr.getUsername() + "<no data>");
+      usr.writeData(pw); 
     }
   }
 
@@ -133,17 +125,19 @@ public class Vault
    */
   public String getEntry(String label) throws Throwable
   {
-    for(Data data : authenticatedUser)
-    {
-      if(data.match(label)) return data.getText();
-    }
+    String s = authenticatedUser.getEntry(label);
+    if (s != null) return s;
+    //for(Data data : authenticatedUser)
+    //{
+      //if(data.match(label)) return data.getText();
+      //}
     throw new NoLabel(authenticatedUser.getUsername(), label); 
   }
 
   /**
    * Print the labels of the authenticated User
    */
-  public void printLabels()
+  public void printLabels() throws Throwable
   {
     authenticatedUser.printLabels();
   }
@@ -191,6 +185,7 @@ public class Vault
     catch (IOException e) { System.out.println("Error! File '" + args[fileInd] + "' could not be opened."); System.exit(1); }
 
     // essential vault for program
+    
     Vault vault = Vault.read(args[fileInd], vfIn);
 
     // variables for main loop
@@ -250,6 +245,8 @@ public class Vault
         }
       } catch(InvalidChar ic) {
         System.out.println("Access denied!");
+        vault.write(pw);
+        pw.close();
         System.exit(1);
       }
 
@@ -264,7 +261,10 @@ public class Vault
         if(cmd.equals("labels"))
         {
           // print all available labels in the user's entries
-          vault.printLabels();
+          try { vault.printLabels(); }
+          catch (AlgorithmNotSupported ans) { 
+            System.out.println(ans.getMessage()); 
+          }
         } 
         else if(cmd.equals("get"))
         {
@@ -316,9 +316,9 @@ public class Vault
       // onto the data I had sent it. Very unfortunate
       pw.close();
 
-    } catch(AlgorithmNotSupported exc) {
-      System.out.println(exc.getMessage());
-      System.exit(1);
+      //} catch(AlgorithmNotSupported exc) {
+      //System.out.println(exc.getMessage());
+      //System.exit(1);
     } catch(InvalidChar ic) {
       System.out.println(ic.getMessage());
       System.exit(1);

@@ -16,7 +16,8 @@ public class Data
   private String ciphertext;
   private String label;
   private String plaintext;
-   /**
+  private String encalgName;
+  /**
    * Create a new Data from 
    * username, algName, label, value
    */
@@ -92,6 +93,7 @@ public class Data
    */
   public String decrypt(String password) throws Throwable
   {
+    encalg = getEncryptor(encalgName);
     encalg.init(password.toCharArray());
     split( encalg.decrypt(ciphertext) );
 
@@ -115,7 +117,8 @@ public class Data
     Data data = new Data();
 
     data.username = in.next();
-    data.encalg = getEncryptor( in.next()  );
+    data.encalgName = in.next();
+    //data.encalg = getEncryptor( in.next()  );
     data.ciphertext = in.next();
 
     return data; 
@@ -152,8 +155,8 @@ public class Data
   public void write(PrintWriter pw)
   {
     if(pw.checkError()) System.out.println("Data: it is closed?");
-    //System.out.println("writing: " + username + "<" + ciphertext + ">");
-    pw.println("data " + username + " " + encalg.getAlgName() + " " + ciphertext);
+     
+    pw.println("data " + username + " " + encalgName + " " + ciphertext);
   }
 
 }

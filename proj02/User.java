@@ -173,13 +173,14 @@ public class User implements Comparable<User>, Iterable<Data>
   /**
    * Print the labels of the entries
    */
-  public void printLabels() 
+  public void printLabels() throws Throwable
   {
     for(Data entry : entries)
     {
       try{ entry.decrypt(password); System.out.println(entry.getLabel()); }
       catch (NoLabel nl) { System.out.println(nl.getMessage()); }
-      catch (Throwable t) { t.printStackTrace(); }
+      catch (AlgorithmNotSupported ans) { System.out.println(ans.getMessage()); }
+      catch (Throwable t) { throw t; }
     }
   }
 
@@ -205,8 +206,36 @@ public class User implements Comparable<User>, Iterable<Data>
         return;
       }
     }
-    
+
     entries.add( new Data(username, password, algName, label, value) );
+  }
+
+  /**
+   * write Data with the PrintWriter
+   */
+  public void writeData(PrintWriter pw)
+  {
+    for(Data d : entries)
+    {
+      d.write(pw);
+    }
+  }
+
+  /**
+   * get entry from the data
+   */
+  public String getEntry(String label) throws Throwable
+  {
+    for(Data d : entries)
+    {
+      try { 
+        d.decrypt(password);
+        if(d.match(label))
+          return d.getText();
+      }
+      catch (Throwable t) { /* do nothing */ }
+    }
+    return null;
   }
 
   //-----------------------------------------------------------------------------------
